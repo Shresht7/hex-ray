@@ -30,10 +30,13 @@ fn main() -> std::io::Result<()> {
 fn print_hexdump(data: &[u8]) {
     for (i, chunk) in data.chunks(16).enumerate() {
         // Print the offset
-        print!("{:08x}  ", i * 16);
+        print!("{:08x}   ", i * 16);
 
         // Print the hex values
-        for byte in chunk {
+        for (j, byte) in chunk.iter().enumerate() {
+            if j > 0 && j % 4 == 0 {
+                print!(" ");
+            }
             print!("{:02x} ", byte); // Format each byte as a 2-wide hexadecimal value
         }
 
