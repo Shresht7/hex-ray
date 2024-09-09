@@ -21,7 +21,42 @@ fn main() -> std::io::Result<()> {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer)?;
 
-    println!("{:?}", buffer);
+    // Print the hexdump
+    print_hexdump(&buffer);
 
     Ok(())
+}
+
+fn print_hexdump(data: &[u8]) {
+    for (i, chunk) in data.chunks(16).enumerate() {
+        // Print the offset
+        print!("{:08x}  ", i * 16);
+
+        // Print the hex values
+        for byte in chunk {
+            print!("{:02x} ", byte); // Format each byte as a 2-wide hexadecimal value
+        }
+
+        // Print spacing if the chunk is less than 16 bytes
+        if chunk.len() < 16 {
+            for _ in 0..(16 - chunk.len()) {
+                print!("   ") // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
+            }
+        }
+
+        // Print the ASCII representation
+        print!("  | ");
+        for byte in chunk {
+            if is_printable_ascii_character(byte) {
+                print!("{}", *byte as char);
+            } else {
+                print!("."); // Non-printable ASCII characters are replaced by a dot
+            }
+        }
+        println!(" | ");
+    }
+}
+
+fn is_printable_ascii_character(byte: &u8) -> bool {
+    byte.is_ascii_graphic() || !byte.is_ascii_whitespace()
 }
