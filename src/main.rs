@@ -1,4 +1,7 @@
-fn main() {
+// Library
+use std::io::Read;
+
+fn main() -> std::io::Result<()> {
     // Collect the command-line arguments
     let args: Vec<String> = std::env::args().collect();
 
@@ -11,5 +14,14 @@ fn main() {
     // Get the filepath from the arguments
     let filepath = &args[1];
 
-    println!("{}", filepath);
+    // Open the file
+    let mut file = std::fs::File::open(filepath)?;
+
+    // Read the file contents
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer)?;
+
+    println!("{:?}", buffer);
+
+    Ok(())
 }
