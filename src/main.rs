@@ -1,6 +1,9 @@
 // Library
 use clap::Parser;
-use std::{io::Read, path::PathBuf};
+use std::{
+    io::{Read, Seek},
+    path::PathBuf,
+};
 
 // Modules
 mod helpers;
@@ -12,6 +15,10 @@ struct Args {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases =["path", "src"])]
     filepath: Option<PathBuf>,
+
+    /// The byte offset at which to start reading; i.e. skip the given number of bytes. (default: 0)
+    #[arg(alias = "skip", short, long, default_value_t = 0)]
+    offset: i64,
 }
 
 fn main() -> std::io::Result<()> {
@@ -25,6 +32,12 @@ fn main() -> std::io::Result<()> {
     // otherwise, read the input from stdin
     if let Some(filepath) = args.filepath {
         let mut file = std::fs::File::open(filepath)?;
+
+        // If an offset is provided, seek to the given position
+        if args.offset > 0 {
+            file.seek(std::io::SeekFrom::Start(args.offset as u64))?;
+        }
+
         file.read_to_end(&mut buffer)?;
     } else {
         std::io::stdin().read_to_end(&mut buffer)?;
