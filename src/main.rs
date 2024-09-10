@@ -9,7 +9,7 @@ mod print;
 #[derive(Parser)]
 #[command(version)]
 struct Args {
-    // Path to the file to read
+    /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases =["path", "src"])]
     filepath: Option<PathBuf>,
 }
