@@ -49,7 +49,11 @@ fn print_hexdump(data: &[u8]) {
 
         // Print the ASCII representation
         print!("  | ");
-        for byte in chunk {
+        for (k, byte) in chunk.iter().enumerate() {
+            if k > 0 && k % 4 == 0 {
+                print!(" ");
+            }
+
             if is_printable_ascii_character(byte) {
                 print!("{}", *byte as char);
             } else {
