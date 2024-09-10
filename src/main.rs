@@ -10,6 +10,7 @@ mod print;
 #[command(version)]
 struct Args {
     // Path to the file to read
+    #[clap(aliases =["path", "src"])]
     filepath: Option<PathBuf>,
 }
 
