@@ -1,30 +1,32 @@
 // Library
-use std::io::Read;
+use clap::Parser;
+use std::{io::Read, path::PathBuf};
 
 // Modules
 mod helpers;
 mod print;
 
+#[derive(Parser)]
+#[command(version)]
+struct Args {
+    // Path to the file to read
+    filepath: Option<PathBuf>,
+}
+
 fn main() -> std::io::Result<()> {
     // Collect the command-line arguments
-    let args: Vec<String> = std::env::args().collect();
+    let args = Args::parse();
 
     // Buffer to store the input contents
     let mut buffer = Vec::new();
 
-    // If no arguments are passed, read from stdin...
-    // ...otherwise, read from the filepath
-    if args.len() < 2 {
-        std::io::stdin().read_to_end(&mut buffer)?;
-    } else {
-        // Get the filepath from the arguments
-        let filepath = &args[1];
-
-        // Open the file
+    // If a `filepath` was passed in the arguments, read the file
+    // otherwise, read the input from stdin
+    if let Some(filepath) = args.filepath {
         let mut file = std::fs::File::open(filepath)?;
-
-        // Read the file contents
         file.read_to_end(&mut buffer)?;
+    } else {
+        std::io::stdin().read_to_end(&mut buffer)?;
     }
 
     // Print the hexdump
