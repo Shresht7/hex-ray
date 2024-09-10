@@ -1,6 +1,9 @@
 // Library
 use std::io::Read;
 
+// Modules
+mod helpers;
+
 fn main() -> std::io::Result<()> {
     // Collect the command-line arguments
     let args: Vec<String> = std::env::args().collect();
@@ -54,7 +57,7 @@ fn print_hexdump(data: &[u8]) {
                 print!(" ");
             }
 
-            if is_printable_ascii_character(byte) {
+            if helpers::is_printable_ascii_character(byte) {
                 print!("{}", *byte as char);
             } else {
                 print!("."); // Non-printable ASCII characters are replaced by a dot
@@ -62,8 +65,4 @@ fn print_hexdump(data: &[u8]) {
         }
         println!(" | ");
     }
-}
-
-fn is_printable_ascii_character(byte: &u8) -> bool {
-    byte.is_ascii_graphic() || !byte.is_ascii_whitespace()
 }
