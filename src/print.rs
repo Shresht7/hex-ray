@@ -4,7 +4,7 @@ use std::usize;
 use crate::helpers;
 
 /// Print out the hex-dump of the given byte data
-pub fn hexdump<T>(mut data: T, offset: usize)
+pub fn hexdump<T>(mut data: T, offset: usize, limit: Option<usize>)
 where
     T: std::io::Read,
 {
@@ -14,12 +14,20 @@ where
     // The total number of bytes read already
     let mut total_bytes_read = 0;
     // The number of bytes remaining to be read
-    let mut bytes_remaining = usize::MAX;
+    let mut bytes_remaining = match limit {
+        Some(n) => n,
+        None => usize::MAX,
+    };
 
     loop {
         // Determine the number of bytes to be read in this iteration
+        let bytes_to_read = if bytes_remaining < 16 {
+            bytes_remaining
+        } else {
+            16
+        };
 
-        match data.read(&mut buffer[0..16]) {
+        match data.read(&mut buffer[0..bytes_to_read]) {
             Ok(bytes_read) => {
                 if bytes_read > 0 {
                     print_line(&buffer, offset + bytes_read, total_bytes_read);

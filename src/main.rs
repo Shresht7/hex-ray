@@ -19,6 +19,11 @@ struct Args {
     /// seeks forward from the start, while a negative offset seeks backwards from the end
     #[arg(alias = "skip", short, long, default_value_t = 0)]
     offset: i64,
+
+    /// The number of bytes to read. The program will stop after reading
+    /// the specified number of bytes.
+    #[arg(short, long)]
+    limit: Option<usize>,
 }
 
 fn main() -> Result<(), std::io::Error> {
@@ -42,10 +47,10 @@ fn main() -> Result<(), std::io::Error> {
             file.seek(std::io::SeekFrom::End(args.offset))?;
         }
 
-        print::hexdump(file, offset);
+        print::hexdump(file, offset, args.limit);
     } else {
         let data = std::io::stdin();
-        print::hexdump(data, offset);
+        print::hexdump(data, offset, args.limit);
     }
 
     Ok(())
