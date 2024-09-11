@@ -4,12 +4,12 @@ use std::usize;
 use crate::helpers;
 
 /// Print out the hex-dump of the given byte data
-pub fn hexdump<T>(mut data: T, offset: usize, limit: Option<usize>)
+pub fn hexdump<T>(mut data: T, offset: usize, limit: Option<usize>, size: usize)
 where
     T: std::io::Read,
 {
     // Buffer to store the data
-    let mut buffer = vec![0; 16];
+    let mut buffer = vec![0; size];
 
     // The total number of bytes read already
     let mut total_bytes_read = 0;
@@ -21,16 +21,16 @@ where
 
     loop {
         // Determine the number of bytes to be read in this iteration
-        let bytes_to_read = if bytes_remaining < 16 {
+        let bytes_to_read = if bytes_remaining < size {
             bytes_remaining
         } else {
-            16
+            size
         };
 
         match data.read(&mut buffer[0..bytes_to_read]) {
             Ok(bytes_read) => {
                 if bytes_read > 0 {
-                    print_line(&buffer, bytes_read, offset + total_bytes_read);
+                    print_line(&buffer, size, bytes_read, offset + total_bytes_read);
                     total_bytes_read += bytes_read;
                     bytes_remaining -= bytes_read;
                 } else {
@@ -50,9 +50,9 @@ where
 // -------
 
 /// Prints a row in the hexdump table
-fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
+fn print_line(buffer: &[u8], size: usize, bytes_read: usize, total_bytes_read: usize) {
     print_offset(total_bytes_read);
-    print_hex_values(&buffer);
+    print_hex_values(&buffer, size);
     print_ascii_representation(&buffer, bytes_read);
 }
 
@@ -73,7 +73,7 @@ fn print_offset(offset: usize) {
 }
 
 /// Print the hex-values columns
-fn print_hex_values(chunk: &[u8]) {
+fn print_hex_values(chunk: &[u8], size: usize) {
     // Print the hex values
     for (j, byte) in chunk.iter().enumerate() {
         // Group values by applying spacing
@@ -83,9 +83,9 @@ fn print_hex_values(chunk: &[u8]) {
         print!("{:02x} ", byte); // Format each byte as a 2-wide hexadecimal value
     }
 
-    // Print spacing if the chunk is less than 16 bytes
-    if chunk.len() < 16 {
-        for _ in 0..(16 - chunk.len()) {
+    // Print spacing if the chunk is less than size bytes
+    if chunk.len() < size {
+        for _ in 0..(size - chunk.len()) {
             print!("   ") // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
         }
     }

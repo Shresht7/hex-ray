@@ -24,6 +24,10 @@ struct Args {
     /// the specified number of bytes.
     #[arg(short, long)]
     limit: Option<usize>,
+
+    /// The size of each row
+    #[arg(short, long, default_value_t = 16)]
+    size: usize,
 }
 
 fn main() -> Result<(), std::io::Error> {
@@ -47,10 +51,10 @@ fn main() -> Result<(), std::io::Error> {
             file.seek(std::io::SeekFrom::End(args.offset))?;
         }
 
-        print::hexdump(file, offset, args.limit);
+        print::hexdump(file, offset, args.limit, args.size);
     } else {
         let data = std::io::stdin();
-        print::hexdump(data, offset, args.limit);
+        print::hexdump(data, offset, args.limit, args.size);
     }
 
     Ok(())
