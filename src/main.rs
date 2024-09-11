@@ -8,6 +8,7 @@ mod print;
 
 #[derive(Parser)]
 #[command(version)]
+#[command(about)]
 struct Args {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases = ["path", "src"])]
