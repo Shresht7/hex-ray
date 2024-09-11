@@ -50,7 +50,18 @@ fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
 
 /// Print the offset column
 fn print_offset(offset: usize) {
-    print!("{:08x}   ", offset * 16);
+    let res = format!("{}", offset);
+    if res.len() > 8 {
+        print!("{}:", res);
+        return;
+    }
+
+    let mut padding = String::from(" ");
+    for _ in 0..(8 - res.len()) {
+        padding.push_str("·");
+    }
+
+    print!("{}{}:  ", padding, res);
 }
 
 /// Print the hex-values columns
