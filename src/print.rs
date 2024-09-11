@@ -4,7 +4,7 @@ use std::usize;
 use crate::helpers;
 
 /// Print out the hex-dump of the given byte data
-pub fn hexdump<T>(mut data: T)
+pub fn hexdump<T>(mut data: T, offset: usize)
 where
     T: std::io::Read,
 {
@@ -22,7 +22,7 @@ where
         match data.read(&mut buffer[0..16]) {
             Ok(bytes_read) => {
                 if bytes_read > 0 {
-                    print_line(&buffer, bytes_read, total_bytes_read);
+                    print_line(&buffer, offset + bytes_read, total_bytes_read);
                     total_bytes_read += bytes_read;
                     bytes_remaining -= bytes_read;
                 } else {
@@ -58,7 +58,7 @@ fn print_offset(offset: usize) {
 
     let mut padding = String::from(" ");
     for _ in 0..(8 - res.len()) {
-        padding.push_str("·");
+        padding.push_str(".");
     }
 
     print!("{}{}:  ", padding, res);
@@ -98,7 +98,7 @@ fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
             if helpers::is_printable_ascii_character(&byte) {
                 print!("{}", *byte as char);
             } else {
-                print!("·"); // Non-printable ASCII characters are replaced by a dot
+                print!("."); // Non-printable ASCII characters are replaced by a dot
             }
         } else {
             print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space

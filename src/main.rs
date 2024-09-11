@@ -25,6 +25,9 @@ fn main() -> Result<(), std::io::Error> {
     // Collect the command-line arguments
     let args = Args::parse();
 
+    // The byte offset at which to start reading
+    let mut offset = args.offset as usize;
+
     // If a `filepath` was passed in the arguments, read the file
     // otherwise, read the input from stdin
     if let Some(filepath) = args.filepath {
@@ -34,13 +37,15 @@ fn main() -> Result<(), std::io::Error> {
         if args.offset > 0 {
             file.seek(std::io::SeekFrom::Start(args.offset as u64))?;
         } else if args.offset < 0 {
+            let file_size = file.seek(std::io::SeekFrom::End(0))?;
+            offset = (file_size as i64 + args.offset) as usize;
             file.seek(std::io::SeekFrom::End(args.offset))?;
         }
 
-        print::hexdump(file);
+        print::hexdump(file, offset);
     } else {
         let data = std::io::stdin();
-        print::hexdump(data);
+        print::hexdump(data, offset);
     }
 
     Ok(())
