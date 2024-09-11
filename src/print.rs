@@ -1,14 +1,47 @@
+use std::usize;
+
 // Library
 use crate::helpers;
 
 /// Print out the hex-dump of the given byte data
-pub fn hexdump(data: &[u8]) {
-    for (i, chunk) in data.chunks(16).enumerate() {
-        print_offset(i);
-        print_hex_values(chunk);
-        print_ascii_representation(chunk);
+pub fn hexdump<T>(mut data: T)
+where
+    T: std::io::Read,
+{
+    // Buffer to store the data
+    let mut buffer = vec![0; 16];
+
+    // The number of bytes read already
+    let mut bytes_read = 0;
+    // The number of bytes remaining to be read
+    let mut bytes_remaining = usize::MAX;
+
+    loop {
+        // Determine the number of bytes to be read in this iteration
+
+        match data.read(&mut buffer[0..16]) {
+            Ok(n) => {
+                if n > 0 {
+                    print_offset(bytes_read);
+                    print_hex_values(&buffer);
+                    print_ascii_representation(&buffer);
+                    bytes_read += n;
+                    bytes_remaining -= n;
+                } else {
+                    break;
+                }
+            }
+            Err(e) => {
+                eprintln!("Error: {}", e);
+                std::process::exit(1);
+            }
+        }
     }
 }
+
+// -------
+// HELPERS
+// -------
 
 /// Print the offset column
 fn print_offset(i: usize) {
