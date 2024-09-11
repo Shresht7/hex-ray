@@ -22,9 +22,7 @@ where
         match data.read(&mut buffer[0..16]) {
             Ok(n) => {
                 if n > 0 {
-                    print_offset(bytes_read);
-                    print_hex_values(&buffer);
-                    print_ascii_representation(&buffer);
+                    print_line(&buffer, bytes_read);
                     bytes_read += n;
                     bytes_remaining -= n;
                 } else {
@@ -43,9 +41,16 @@ where
 // HELPERS
 // -------
 
+/// Prints a row in the hexdump table
+fn print_line(buffer: &[u8], bytes_read: usize) {
+    print_offset(bytes_read);
+    print_hex_values(&buffer);
+    print_ascii_representation(&buffer);
+}
+
 /// Print the offset column
-fn print_offset(i: usize) {
-    print!("{:08x}   ", i * 16);
+fn print_offset(offset: usize) {
+    print!("{:08x}   ", offset * 16);
 }
 
 /// Print the hex-values columns
@@ -81,5 +86,5 @@ fn print_ascii_representation(chunk: &[u8]) {
             print!("."); // Non-printable ASCII characters are replaced by a dot
         }
     }
-    println!(" | ");
+    println!(" |");
 }
