@@ -85,7 +85,7 @@ fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
             if helpers::is_printable_ascii_character(&byte) {
                 print!("{}", *byte as char);
             } else {
-                print!("."); // Non-printable ASCII characters are replaced by a dot
+                print!("·"); // Non-printable ASCII characters are replaced by a dot
             }
         } else {
             print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space
