@@ -5,6 +5,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Shresht7"]
 license = "MIT"
+homepage = "https://github.com/Shresht7/hex-ray"
 repository = "https://github.com/Shresht7/hex-ray"
 
 [dependencies]
