@@ -75,20 +75,20 @@ fn print_hex_values(chunk: &[u8]) {
 fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
     // Print the ASCII representation
     print!("  | ");
-    for k in 0..16 {
+    for (k, byte) in chunk.iter().enumerate() {
         if k > 0 && k % 4 == 0 {
             print!(" ");
         }
 
-        let byte = chunk[k];
+        // If there are still bytes to read, print the ASCII character...
         if k < bytes_read {
             if helpers::is_printable_ascii_character(&byte) {
-                print!("{}", byte as char);
+                print!("{}", *byte as char);
             } else {
                 print!("."); // Non-printable ASCII characters are replaced by a dot
             }
         } else {
-            print!(" "); // If there are no more bytes left in this iteration, just print an empty space
+            print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space
         }
     }
     println!(" |");
