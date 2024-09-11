@@ -60,7 +60,7 @@ fn print_line(buffer: &[u8], size: usize, bytes_read: usize, total_bytes_read: u
 fn print_offset(offset: usize) {
     let res = format!("{}", offset);
     if res.len() > 8 {
-        print!("{}:", res);
+        print!("{}", res);
         return;
     }
 
@@ -69,7 +69,7 @@ fn print_offset(offset: usize) {
         padding.push_str(".");
     }
 
-    print!("{}{}:  ", padding, res);
+    print!("{}{} |  ", padding, res);
 }
 
 /// Print the hex-values columns
