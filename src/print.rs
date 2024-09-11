@@ -1,7 +1,6 @@
-use std::usize;
-
 // Library
 use crate::helpers;
+use std::usize;
 
 /// Print out the hex-dump of the given byte data
 pub fn hexdump<T>(mut data: T, offset: usize, limit: Option<usize>, size: usize)
