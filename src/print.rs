@@ -1,6 +1,7 @@
 // Library
 use crate::helpers;
 
+/// Print out the hex-dump of the given byte data
 pub fn hexdump(data: &[u8]) {
     for (i, chunk) in data.chunks(16).enumerate() {
         print_offset(i);
@@ -9,10 +10,12 @@ pub fn hexdump(data: &[u8]) {
     }
 }
 
+/// Print the offset column
 fn print_offset(i: usize) {
     print!("{:08x}   ", i * 16);
 }
 
+/// Print the hex-values columns
 fn print_hex_values(chunk: &[u8]) {
     // Print the hex values
     for (j, byte) in chunk.iter().enumerate() {
@@ -30,6 +33,7 @@ fn print_hex_values(chunk: &[u8]) {
     }
 }
 
+/// Print the ASCII columns
 fn print_ascii_representation(chunk: &[u8]) {
     // Print the ASCII representation
     print!("  | ");
