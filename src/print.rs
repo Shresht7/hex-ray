@@ -30,7 +30,7 @@ where
         match data.read(&mut buffer[0..bytes_to_read]) {
             Ok(bytes_read) => {
                 if bytes_read > 0 {
-                    print_line(&buffer, offset + bytes_read, total_bytes_read);
+                    print_line(&buffer, bytes_read, offset + total_bytes_read);
                     total_bytes_read += bytes_read;
                     bytes_remaining -= bytes_read;
                 } else {
