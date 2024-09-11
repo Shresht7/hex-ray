@@ -20,11 +20,11 @@ where
         // Determine the number of bytes to be read in this iteration
 
         match data.read(&mut buffer[0..16]) {
-            Ok(n) => {
-                if n > 0 {
-                    print_line(&buffer, total_bytes_read);
-                    total_bytes_read += n;
-                    bytes_remaining -= n;
+            Ok(bytes_read) => {
+                if bytes_read > 0 {
+                    print_line(&buffer, bytes_read, total_bytes_read);
+                    total_bytes_read += bytes_read;
+                    bytes_remaining -= bytes_read;
                 } else {
                     break;
                 }
@@ -42,10 +42,10 @@ where
 // -------
 
 /// Prints a row in the hexdump table
-fn print_line(buffer: &[u8], bytes_read: usize) {
-    print_offset(bytes_read);
+fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
+    print_offset(total_bytes_read);
     print_hex_values(&buffer);
-    print_ascii_representation(&buffer);
+    print_ascii_representation(&buffer, bytes_read);
 }
 
 /// Print the offset column
@@ -72,16 +72,17 @@ fn print_hex_values(chunk: &[u8]) {
 }
 
 /// Print the ASCII columns
-fn print_ascii_representation(chunk: &[u8]) {
+fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
     // Print the ASCII representation
     print!("  | ");
-    for (k, byte) in chunk.iter().enumerate() {
+    for k in 0..bytes_read {
         if k > 0 && k % 4 == 0 {
             print!(" ");
         }
 
-        if helpers::is_printable_ascii_character(byte) {
-            print!("{}", *byte as char);
+        let byte = chunk[k];
+        if helpers::is_printable_ascii_character(&byte) {
+            print!("{}", byte as char);
         } else {
             print!("."); // Non-printable ASCII characters are replaced by a dot
         }
