@@ -16,7 +16,7 @@ struct Args {
     #[clap(aliases =["path", "src"])]
     filepath: Option<PathBuf>,
 
-    /// The byte offset at which to start reading; i.e. skip the given number of bytes. (default: 0)
+    /// The byte offset at which to start reading; i.e. skip the given number of bytes
     #[arg(alias = "skip", short, long, default_value_t = 0)]
     offset: i64,
 }
