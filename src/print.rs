@@ -57,6 +57,7 @@ fn print_offset(offset: usize) {
 fn print_hex_values(chunk: &[u8]) {
     // Print the hex values
     for (j, byte) in chunk.iter().enumerate() {
+        // Group values by applying spacing
         if j > 0 && j % 4 == 0 {
             print!(" ");
         }
@@ -73,9 +74,10 @@ fn print_hex_values(chunk: &[u8]) {
 
 /// Print the ASCII columns
 fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
-    // Print the ASCII representation
     print!("  | ");
+    // Print the ASCII representation
     for (k, byte) in chunk.iter().enumerate() {
+        // Group characters by applying spacing
         if k > 0 && k % 4 == 0 {
             print!(" ");
         }
