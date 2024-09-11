@@ -21,6 +21,8 @@ A hexdump utility that let's you look at the individual bytes that make up a fil
 
 </details>
 
+<!-- TODO: Add sample output, screenshot or demo -->
+
 ## Installation
 
 To install `hex-ray`, ensure you have Rust and Cargo installed. You can then build the project from source.
@@ -56,6 +58,8 @@ Here's an example of what the output will look like.
 ```output
 00000000  48 65 6c 6c 6f 20 77 6f  72 6c 64 21 0a           | Hello world!.   |
 ```
+
+<!-- TODO: Full help message -->
 
 ---
 
