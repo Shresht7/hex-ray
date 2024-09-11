@@ -11,8 +11,8 @@ where
     // Buffer to store the data
     let mut buffer = vec![0; 16];
 
-    // The number of bytes read already
-    let mut bytes_read = 0;
+    // The total number of bytes read already
+    let mut total_bytes_read = 0;
     // The number of bytes remaining to be read
     let mut bytes_remaining = usize::MAX;
 
@@ -22,8 +22,8 @@ where
         match data.read(&mut buffer[0..16]) {
             Ok(n) => {
                 if n > 0 {
-                    print_line(&buffer, bytes_read);
-                    bytes_read += n;
+                    print_line(&buffer, total_bytes_read);
+                    total_bytes_read += n;
                     bytes_remaining -= n;
                 } else {
                     break;
