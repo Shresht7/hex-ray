@@ -3,7 +3,12 @@ use crate::helpers;
 use std::usize;
 
 /// Print out the hex-dump of the given byte data
-pub fn hexdump<T>(mut data: T, offset: usize, limit: Option<usize>, size: usize)
+pub fn hexdump<T>(
+    mut data: T,
+    offset: usize,
+    limit: Option<usize>,
+    size: usize,
+) -> Result<(), Box<dyn std::error::Error>>
 where
     T: std::io::Read,
 {
@@ -26,22 +31,17 @@ where
             size
         };
 
-        match data.read(&mut buffer[0..bytes_to_read]) {
-            Ok(bytes_read) => {
-                if bytes_read > 0 {
-                    print_line(&buffer, size, bytes_read, offset + total_bytes_read);
-                    total_bytes_read += bytes_read;
-                    bytes_remaining -= bytes_read;
-                } else {
-                    break;
-                }
-            }
-            Err(e) => {
-                eprintln!("Error: {}", e);
-                std::process::exit(1);
-            }
+        let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
+        if bytes_read > 0 {
+            print_line(&buffer, size, bytes_read, offset + total_bytes_read);
+            total_bytes_read += bytes_read;
+            bytes_remaining -= bytes_read;
+        } else {
+            break;
         }
     }
+
+    Ok(())
 }
 
 // -------
