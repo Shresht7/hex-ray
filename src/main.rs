@@ -51,12 +51,12 @@ fn main() -> Result<(), std::io::Error> {
             file.seek(std::io::SeekFrom::End(args.offset))?;
         }
 
-        print::hexdump(file, offset, args.limit, args.size);
+        print::hexdump(file, offset, args.limit, args.size).expect("Failed to produce hexdump");
     } else {
         // ... Otherwise, read the input from STDIN
         offset = 0; // Offset is not supported in this mode
         let data = std::io::stdin();
-        print::hexdump(data, offset, args.limit, args.size);
+        print::hexdump(data, offset, args.limit, args.size).expect("Failed to produce hexdump");
     }
 
     Ok(())
