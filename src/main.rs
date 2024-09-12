@@ -54,6 +54,7 @@ fn main() -> Result<(), std::io::Error> {
         print::hexdump(file, offset, args.limit, args.size);
     } else {
         // ... Otherwise, read the input from STDIN
+        offset = 0; // Offset is not supported in this mode
         let data = std::io::stdin();
         print::hexdump(data, offset, args.limit, args.size);
     }
