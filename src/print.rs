@@ -21,11 +21,12 @@ impl Default for Hex {
 
 impl Hex {
     /// Instantiate a new Hex
-    pub fn new(offset: usize, limit: Option<usize>, size: usize) -> Self {
+    pub fn new(offset: usize, limit: Option<usize>, size: usize, group_size: usize) -> Self {
         Self {
             offset,
             limit,
             size,
+            group_size,
             ..Default::default()
         }
     }

@@ -27,6 +27,10 @@ struct Args {
     /// The size of each row
     #[arg(short, long, default_value_t = 16)]
     size: usize,
+
+    /// Chunk the output into groups of this size
+    #[arg(alias = "chunk", short, long, default_value_t = 4)]
+    group_size: usize,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -54,14 +58,14 @@ fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
         }
 
         let reader = BufReader::new(file);
-        let hex = print::Hex::new(offset, args.limit, args.size);
+        let hex = print::Hex::new(offset, args.limit, args.size, args.group_size);
         hex.dump(reader)?;
     } else {
         // ... Otherwise, read the input from STDIN
         offset = 0; // Offset is not supported in this mode
         let data = std::io::stdin();
         let reader = BufReader::new(data);
-        let hex = print::Hex::new(offset, args.limit, args.size);
+        let hex = print::Hex::new(offset, args.limit, args.size, args.group_size);
         hex.dump(reader)?;
     }
 
