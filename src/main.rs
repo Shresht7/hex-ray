@@ -1,6 +1,6 @@
 // Traits
 use clap::Parser;
-use std::io::Seek;
+use std::io::{BufReader, Seek};
 
 // Modules
 mod helpers;
@@ -29,7 +29,7 @@ struct Args {
     size: usize,
 }
 
-fn main() -> Result<(), std::io::Error> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Parse the command-line arguments
     let args = Args::parse();
 
@@ -51,12 +51,14 @@ fn main() -> Result<(), std::io::Error> {
             file.seek(std::io::SeekFrom::End(args.offset))?;
         }
 
-        print::hexdump(file, offset, args.limit, args.size).expect("Failed to produce hexdump");
+        let reader = BufReader::new(file);
+        print::hexdump(reader, offset, args.limit, args.size)?;
     } else {
         // ... Otherwise, read the input from STDIN
         offset = 0; // Offset is not supported in this mode
         let data = std::io::stdin();
-        print::hexdump(data, offset, args.limit, args.size).expect("Failed to produce hexdump");
+        let reader = BufReader::new(data);
+        print::hexdump(reader, offset, args.limit, args.size)?;
     }
 
     Ok(())
