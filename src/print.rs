@@ -19,6 +19,8 @@ where
     // The number of bytes remaining to be read
     let mut bytes_remaining = limit.unwrap_or(usize::MAX);
 
+    print_top_line(size);
+
     loop {
         // Determine the number of bytes to be read in this iteration
         let bytes_to_read = std::cmp::min(bytes_remaining, size);
@@ -33,6 +35,8 @@ where
         }
     }
 
+    print_bottom_line(size);
+
     Ok(())
 }
 
@@ -40,15 +44,38 @@ where
 // HELPERS
 // -------
 
+fn print_top_line(size: usize) {
+    let mut line = String::from("┌───────────┬");
+
+    for i in 0..size {
+        if i > 0 && i % 4 == 0 {
+            line.push_str("──");
+        }
+        line.push_str("───");
+    }
+
+    line.push_str("─┬─");
+
+    for i in 0..size {
+        if i > 0 && i % 4 == 0 {
+            line.push_str("─");
+        }
+        line.push_str("─");
+    }
+
+    line.push_str("─┐");
+    println!("{}", line);
+}
+
 /// Prints a row in the hexdump table
 fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
-    print!("| ");
+    print!("│ ");
     print_offset(total_bytes_read);
-    print!(" |  ");
+    print!(" │  ");
     print_hex_values(&buffer, bytes_read);
-    print!("  | ");
+    print!("  │ ");
     print_ascii_representation(&buffer, bytes_read);
-    println!(" |");
+    println!(" │");
 }
 
 /// Print the offset column
@@ -104,4 +131,27 @@ fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
             print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space
         }
     }
+}
+
+fn print_bottom_line(size: usize) {
+    let mut line = String::from("└───────────┴");
+
+    for i in 0..size {
+        if i > 0 && i % 4 == 0 {
+            line.push_str("──");
+        }
+        line.push_str("───");
+    }
+
+    line.push_str("─┴─");
+
+    for i in 0..size {
+        if i > 0 && i % 4 == 0 {
+            line.push_str("─");
+        }
+        line.push_str("─");
+    }
+
+    line.push_str("─┘");
+    println!("{}", line);
 }
