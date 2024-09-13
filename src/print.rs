@@ -97,7 +97,7 @@ impl Hex {
 
     /// Print the offset column
     fn format_offset(&self, offset: usize) -> String {
-        let res = format!("{}", offset);
+        let res = helpers::Format::Octal.format(offset as u8);
         if res.len() > 8 {
             return format!("{}", res);
         }
@@ -119,7 +119,9 @@ impl Hex {
             if j > 0 && j % self.group_size == 0 {
                 s.push_str(" ");
             }
-            s.push_str(format!("{:02x} ", byte).as_str()); // Format each byte as a 2-wide hexadecimal value
+            let value = helpers::Format::Hex.format(*byte);
+            s.push_str(&value); // Format each byte as a 2-wide hexadecimal value
+            s.push_str(" ");
         }
 
         // Print spacing if the chunk is less than size bytes
