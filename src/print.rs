@@ -89,21 +89,17 @@ impl Hex {
 
     /// Prints a row in the hexdump table
     fn print_line(&self, buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
-        print!("│ ");
-        self.print_offset(total_bytes_read);
-        print!(" │  ");
-        self.print_hex_values(&buffer, bytes_read);
-        print!("  │ ");
-        self.print_ascii_representation(&buffer, bytes_read);
-        println!(" │");
+        let offset = self.format_offset(total_bytes_read);
+        let hex_values = self.format_hex_values(&buffer, bytes_read);
+        let ascii_values = self.format_ascii_representation(&buffer, bytes_read);
+        println!("│ {} │  {}  │ {} |", offset, hex_values, ascii_values);
     }
 
     /// Print the offset column
-    fn print_offset(&self, offset: usize) {
+    fn format_offset(&self, offset: usize) -> String {
         let res = format!("{}", offset);
         if res.len() > 8 {
-            print!("{}", res);
-            return;
+            return format!("{}", res);
         }
 
         let mut padding = String::from(" ");
@@ -111,46 +107,54 @@ impl Hex {
             padding.push_str("·");
         }
 
-        print!("{}{}", padding, res);
+        format!("{}{}", padding, res)
     }
 
     /// Print the hex-values columns
-    fn print_hex_values(&self, chunk: &[u8], bytes_read: usize) {
+    fn format_hex_values(&self, chunk: &[u8], bytes_read: usize) -> String {
+        let mut s = String::new();
         // Print the hex values
         for (j, byte) in chunk.iter().take(bytes_read).enumerate() {
             // Group values by applying spacing
             if j > 0 && j % self.group_size == 0 {
-                print!(" ");
+                s.push_str(" ");
             }
-            print!("{:02x} ", byte); // Format each byte as a 2-wide hexadecimal value
+            s.push_str(format!("{:02x} ", byte).as_str()); // Format each byte as a 2-wide hexadecimal value
         }
 
         // Print spacing if the chunk is less than size bytes
         for _ in bytes_read..chunk.len() {
-            print!("   "); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
+            s.push_str("   "); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
         }
+
+        s
     }
 
     /// Print the ASCII columns
-    fn print_ascii_representation(&self, chunk: &[u8], bytes_read: usize) {
+    fn format_ascii_representation(&self, chunk: &[u8], bytes_read: usize) -> String {
+        let mut s = String::new();
+
         // Print the ASCII representation
         for (k, byte) in chunk.iter().enumerate() {
             // Group characters by applying spacing
             if k > 0 && k % self.group_size == 0 {
-                print!(" ");
+                s.push_str(" ");
             }
 
             // If there are still bytes to read, print the ASCII character...
             if k < bytes_read {
-                if helpers::is_printable_ascii_character(&byte) {
-                    print!("{}", *byte as char);
+                let c = if helpers::is_printable_ascii_character(&byte) {
+                    format!("{}", *byte as char)
                 } else {
-                    print!("·"); // Non-printable ASCII characters are replaced by a dot
-                }
+                    format!("·") // Non-printable ASCII characters are replaced by a dot
+                };
+                s.push_str(c.as_str());
             } else {
-                print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space
+                s.push_str(" "); // Else if there are no more bytes left in this iteration, just print an empty space
             }
         }
+
+        s
     }
 
     fn print_bottom_line(&self) {
