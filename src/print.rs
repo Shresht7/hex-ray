@@ -5,6 +5,18 @@ pub struct Hex {
     offset: usize,
     limit: Option<usize>,
     size: usize,
+    group_size: usize,
+}
+
+impl Default for Hex {
+    fn default() -> Self {
+        Self {
+            offset: 0,
+            limit: None,
+            size: 16,
+            group_size: 4,
+        }
+    }
 }
 
 impl Hex {
@@ -14,6 +26,7 @@ impl Hex {
             offset,
             limit,
             size,
+            ..Default::default()
         }
     }
 
@@ -64,7 +77,7 @@ impl Hex {
         line.push_str("─┬─");
 
         for i in 0..self.size {
-            if i > 0 && i % 4 == 0 {
+            if i > 0 && i % self.group_size == 0 {
                 line.push_str("─");
             }
             line.push_str("─");
@@ -106,7 +119,7 @@ impl Hex {
         // Print the hex values
         for (j, byte) in chunk.iter().take(bytes_read).enumerate() {
             // Group values by applying spacing
-            if j > 0 && j % 4 == 0 {
+            if j > 0 && j % self.group_size == 0 {
                 print!(" ");
             }
             print!("{:02x} ", byte); // Format each byte as a 2-wide hexadecimal value
@@ -123,7 +136,7 @@ impl Hex {
         // Print the ASCII representation
         for (k, byte) in chunk.iter().enumerate() {
             // Group characters by applying spacing
-            if k > 0 && k % 4 == 0 {
+            if k > 0 && k % self.group_size == 0 {
                 print!(" ");
             }
 
@@ -144,7 +157,7 @@ impl Hex {
         let mut line = String::from("└───────────┴");
 
         for i in 0..self.size {
-            if i > 0 && i % 4 == 0 {
+            if i > 0 && i % self.group_size == 0 {
                 line.push_str("──");
             }
             line.push_str("───");
@@ -153,7 +166,7 @@ impl Hex {
         line.push_str("─┴─");
 
         for i in 0..self.size {
-            if i > 0 && i % 4 == 0 {
+            if i > 0 && i % self.group_size == 0 {
                 line.push_str("─");
             }
             line.push_str("─");
