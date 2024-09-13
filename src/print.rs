@@ -1,36 +1,8 @@
 // Library
+use crate::cli::Args;
 use crate::helpers;
 
-pub struct Hex {
-    offset: usize,
-    limit: Option<usize>,
-    size: usize,
-    group_size: usize,
-}
-
-impl Default for Hex {
-    fn default() -> Self {
-        Self {
-            offset: 0,
-            limit: None,
-            size: 16,
-            group_size: 4,
-        }
-    }
-}
-
-impl Hex {
-    /// Instantiate a new Hex
-    pub fn new(offset: usize, limit: Option<usize>, size: usize, group_size: usize) -> Self {
-        Self {
-            offset,
-            limit,
-            size,
-            group_size,
-            ..Default::default()
-        }
-    }
-
+impl Args {
     /// Print out the hex-dump of the given byte data
     pub fn dump<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
     where
@@ -52,7 +24,7 @@ impl Hex {
 
             let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
             if bytes_read > 0 {
-                self.print_line(&buffer, bytes_read, self.offset + total_bytes_read);
+                self.print_line(&buffer, bytes_read, self.offset as usize + total_bytes_read);
                 total_bytes_read += bytes_read;
                 bytes_remaining -= bytes_read;
             } else {
