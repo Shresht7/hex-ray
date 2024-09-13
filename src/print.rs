@@ -25,7 +25,7 @@ where
 
         let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
         if bytes_read > 0 {
-            print_line(&buffer, size, bytes_read, offset + total_bytes_read);
+            print_line(&buffer, bytes_read, offset + total_bytes_read);
             total_bytes_read += bytes_read;
             bytes_remaining -= bytes_read;
         } else {
@@ -41,9 +41,9 @@ where
 // -------
 
 /// Prints a row in the hexdump table
-fn print_line(buffer: &[u8], size: usize, bytes_read: usize, total_bytes_read: usize) {
+fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
     print_offset(total_bytes_read);
-    print_hex_values(&buffer, size);
+    print_hex_values(&buffer, bytes_read);
     print_ascii_representation(&buffer, bytes_read);
 }
 
@@ -64,9 +64,9 @@ fn print_offset(offset: usize) {
 }
 
 /// Print the hex-values columns
-fn print_hex_values(chunk: &[u8], size: usize) {
+fn print_hex_values(chunk: &[u8], bytes_read: usize) {
     // Print the hex values
-    for (j, byte) in chunk.iter().enumerate() {
+    for (j, byte) in chunk.iter().take(bytes_read).enumerate() {
         // Group values by applying spacing
         if j > 0 && j % 4 == 0 {
             print!(" ");
@@ -75,10 +75,8 @@ fn print_hex_values(chunk: &[u8], size: usize) {
     }
 
     // Print spacing if the chunk is less than size bytes
-    if chunk.len() < size {
-        for _ in 0..(size - chunk.len()) {
-            print!("   ") // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
-        }
+    for _ in bytes_read..chunk.len() {
+        print!("   "); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
     }
 }
 
