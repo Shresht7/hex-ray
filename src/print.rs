@@ -1,6 +1,5 @@
 // Library
 use crate::helpers;
-use std::usize;
 
 /// Print out the hex-dump of the given byte data
 pub fn hexdump<T>(
@@ -18,18 +17,11 @@ where
     // The total number of bytes read already
     let mut total_bytes_read = 0;
     // The number of bytes remaining to be read
-    let mut bytes_remaining = match limit {
-        Some(n) => n,
-        None => usize::MAX,
-    };
+    let mut bytes_remaining = limit.unwrap_or(usize::MAX);
 
     loop {
         // Determine the number of bytes to be read in this iteration
-        let bytes_to_read = if bytes_remaining < size {
-            bytes_remaining
-        } else {
-            size
-        };
+        let bytes_to_read = std::cmp::min(bytes_remaining, size);
 
         let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
         if bytes_read > 0 {
