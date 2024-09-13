@@ -65,7 +65,7 @@ impl Args {
         let offset = self.format_offset(total_bytes_read);
         let hex_values = self.format_hex_values(&buffer, bytes_read);
         let ascii_values = self.format_ascii_representation(&buffer, bytes_read);
-        println!("│ {} │  {}  │ {} |", offset, hex_values, ascii_values);
+        println!("│ {} │  {}  │ {} │", offset, hex_values, ascii_values);
     }
 
     /// Print the offset column
