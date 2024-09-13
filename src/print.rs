@@ -42,9 +42,13 @@ where
 
 /// Prints a row in the hexdump table
 fn print_line(buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
+    print!("| ");
     print_offset(total_bytes_read);
+    print!(" |  ");
     print_hex_values(&buffer, bytes_read);
+    print!("  | ");
     print_ascii_representation(&buffer, bytes_read);
+    println!(" |");
 }
 
 /// Print the offset column
@@ -60,7 +64,7 @@ fn print_offset(offset: usize) {
         padding.push_str("·");
     }
 
-    print!("{}{} |  ", padding, res);
+    print!("{}{}", padding, res);
 }
 
 /// Print the hex-values columns
@@ -82,7 +86,6 @@ fn print_hex_values(chunk: &[u8], bytes_read: usize) {
 
 /// Print the ASCII columns
 fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
-    print!("  | ");
     // Print the ASCII representation
     for (k, byte) in chunk.iter().enumerate() {
         // Group characters by applying spacing
@@ -101,5 +104,4 @@ fn print_ascii_representation(chunk: &[u8], bytes_read: usize) {
             print!(" "); // Else if there are no more bytes left in this iteration, just print an empty space
         }
     }
-    println!(" |");
 }
