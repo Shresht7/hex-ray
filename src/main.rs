@@ -3,42 +3,16 @@ use clap::Parser;
 use std::io::{BufReader, Seek};
 
 // Modules
+mod cli;
 mod helpers;
 mod print;
 
-#[derive(Parser)]
-#[command(version, about)]
-struct Args {
-    /// Path to the file to read (defaults to reading from `stdin` if empty)
-    #[clap(aliases = ["path", "src"])]
-    filepath: Option<std::path::PathBuf>,
-
-    /// The byte offset at which to start reading; i.e. skip the given number of bytes.
-    /// You can specify a positive or negative integer value; A positive integer offset
-    /// seeks forward from the start, while a negative offset seeks backwards from the end
-    #[arg(aliases = ["skip", "seek"], short, long, default_value_t = 0)]
-    offset: i64,
-
-    /// The number of bytes to read. The program will stop after reading
-    /// the specified number of bytes.
-    #[arg(short, long)]
-    limit: Option<usize>,
-
-    /// The size of each row
-    #[arg(short, long, default_value_t = 16)]
-    size: usize,
-
-    /// Chunk the output into groups of this size
-    #[arg(alias = "chunk", short, long, default_value_t = 4)]
-    group_size: usize,
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse(); // Parse the command-line arguments
+    let args = cli::Args::parse(); // Parse the command-line arguments
     run(args) // Run the command-line application with the given arguments
 }
 
-fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
+fn run(args: cli::Args) -> Result<(), Box<dyn std::error::Error>> {
     // The byte offset at which to start reading the data
     let mut offset = args.offset as usize;
 
