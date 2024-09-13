@@ -18,18 +18,18 @@ impl Args {
 
         self.print_top_line();
 
-        loop {
+        while bytes_remaining > 0 {
             // Determine the number of bytes to be read in this iteration
             let bytes_to_read = std::cmp::min(bytes_remaining, self.size);
 
             let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
-            if bytes_read > 0 {
-                self.print_line(&buffer, bytes_read, self.offset as usize + total_bytes_read);
-                total_bytes_read += bytes_read;
-                bytes_remaining -= bytes_read;
-            } else {
+            if bytes_read == 0 {
                 break;
             }
+
+            self.print_line(&buffer, bytes_read, self.offset as usize + total_bytes_read);
+            total_bytes_read += bytes_read;
+            bytes_remaining -= bytes_read;
         }
 
         self.print_bottom_line();
