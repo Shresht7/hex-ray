@@ -30,9 +30,11 @@ struct Args {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Parse the command-line arguments
-    let args = Args::parse();
+    let args = Args::parse(); // Parse the command-line arguments
+    run(args) // Run the command-line application with the given arguments
+}
 
+fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     // The byte offset at which to start reading the data
     let mut offset = args.offset as usize;
 
