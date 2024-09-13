@@ -19,7 +19,7 @@ fn run(args: &mut cli::Args) -> Result<(), Box<dyn std::error::Error>> {
 
         // Apply the offset at which the program starts reading. A positive
         // offset seeks forward from the beginning of the file ...
-        if args.offset > 0 {
+        if args.offset >= 0 {
             file.seek(std::io::SeekFrom::Start(args.offset as u64))?;
         } else if args.offset < 0 {
             // ... while an negative offset seeks backwards from the end of the file
