@@ -1,43 +1,55 @@
 // Library
 use crate::helpers;
 
-/// Print out the hex-dump of the given byte data
-pub fn hexdump<T>(
-    mut data: T,
+pub struct Hex {
     offset: usize,
     limit: Option<usize>,
     size: usize,
-) -> Result<(), Box<dyn std::error::Error>>
-where
-    T: std::io::Read,
-{
-    // Buffer to store the data
-    let mut buffer = vec![0; size];
+}
 
-    // The total number of bytes read already
-    let mut total_bytes_read = 0;
-    // The number of bytes remaining to be read
-    let mut bytes_remaining = limit.unwrap_or(usize::MAX);
-
-    print_top_line(size);
-
-    loop {
-        // Determine the number of bytes to be read in this iteration
-        let bytes_to_read = std::cmp::min(bytes_remaining, size);
-
-        let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
-        if bytes_read > 0 {
-            print_line(&buffer, bytes_read, offset + total_bytes_read);
-            total_bytes_read += bytes_read;
-            bytes_remaining -= bytes_read;
-        } else {
-            break;
+impl Hex {
+    /// Instantiate a new Hex
+    pub fn new(offset: usize, limit: Option<usize>, size: usize) -> Self {
+        Self {
+            offset,
+            limit,
+            size,
         }
     }
 
-    print_bottom_line(size);
+    /// Print out the hex-dump of the given byte data
+    pub fn dump<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
+    where
+        T: std::io::Read,
+    {
+        // Buffer to store the data
+        let mut buffer = vec![0; self.size];
 
-    Ok(())
+        // The total number of bytes read already
+        let mut total_bytes_read = 0;
+        // The number of bytes remaining to be read
+        let mut bytes_remaining = self.limit.unwrap_or(usize::MAX);
+
+        print_top_line(self.size);
+
+        loop {
+            // Determine the number of bytes to be read in this iteration
+            let bytes_to_read = std::cmp::min(bytes_remaining, self.size);
+
+            let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
+            if bytes_read > 0 {
+                print_line(&buffer, bytes_read, self.offset + total_bytes_read);
+                total_bytes_read += bytes_read;
+                bytes_remaining -= bytes_read;
+            } else {
+                break;
+            }
+        }
+
+        print_bottom_line(self.size);
+
+        Ok(())
+    }
 }
 
 // -------

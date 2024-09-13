@@ -54,13 +54,15 @@ fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
         }
 
         let reader = BufReader::new(file);
-        print::hexdump(reader, offset, args.limit, args.size)?;
+        let hex = print::Hex::new(offset, args.limit, args.size);
+        hex.dump(reader)?;
     } else {
         // ... Otherwise, read the input from STDIN
         offset = 0; // Offset is not supported in this mode
         let data = std::io::stdin();
         let reader = BufReader::new(data);
-        print::hexdump(reader, offset, args.limit, args.size)?;
+        let hex = print::Hex::new(offset, args.limit, args.size);
+        hex.dump(reader)?;
     }
 
     Ok(())
