@@ -40,13 +40,13 @@ impl Args {
     }
 
     fn print_top_line(&self) {
-        let mut line = String::from("┌───────────┬");
+        let mut line = String::from("┌───────────┬─");
 
         for i in 0..self.size {
-            if i > 0 && i % 4 == 0 {
-                line.push_str("──");
+            if i > 0 && i % self.group_size == 0 {
+                line.push_str("─");
             }
-            line.push_str("───");
+            line.push_str(&"─".repeat(self.format.size() + 1));
         }
 
         line.push_str("─┬─");
@@ -67,7 +67,7 @@ impl Args {
         let offset = self.format_offset(total_bytes_read);
         let hex_values = self.format_hex_values(&buffer, bytes_read);
         let ascii_values = self.format_ascii_representation(&buffer, bytes_read);
-        println!("│ {} │  {}  │ {} │", offset, hex_values, ascii_values);
+        println!("│ {} │ {} │ {} │", offset, hex_values, ascii_values);
     }
 
     /// Print the offset column
@@ -136,13 +136,13 @@ impl Args {
     }
 
     fn print_bottom_line(&self) {
-        let mut line = String::from("└───────────┴");
+        let mut line = String::from("└───────────┴─");
 
         for i in 0..self.size {
             if i > 0 && i % self.group_size == 0 {
-                line.push_str("──");
+                line.push_str("─");
             }
-            line.push_str("───");
+            line.push_str(&"─".repeat(self.format.size() + 1));
         }
 
         line.push_str("─┴─");

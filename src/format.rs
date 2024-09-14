@@ -41,4 +41,14 @@ impl Format {
             Self::Decimal => format!("{:03}", data),
         }
     }
+
+    pub fn size(&self) -> usize {
+        match &self {
+            Format::Hex => 2,
+            Format::UpperHex => 2,
+            Format::Binary => 8,
+            Format::Octal => 3,
+            Format::Decimal => 3,
+        }
+    }
 }
