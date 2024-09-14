@@ -45,6 +45,17 @@ pub struct Args {
     pub no_color: bool,
 }
 
+impl Args {
+    /// Perform initialization setup
+    pub fn init(self) -> Self {
+        // Disable ANSI colors by setting the `NO_COLOR` env variable
+        if self.no_color {
+            std::env::set_var("NO_COLOR", "true");
+        }
+        self
+    }
+}
+
 // ----------
 // ANSI CODES
 // ----------
