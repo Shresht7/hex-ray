@@ -29,7 +29,11 @@ fn run(args: cli::Args) -> Result<(), Box<dyn std::error::Error>> {
         None => get_stdin_reader(&mut cfg),
     }?;
 
-    cfg.dump(reader)?;
+    if cfg.just_output {
+        cfg.out(reader)?;
+    } else {
+        cfg.dump(reader)?;
+    }
 
     Ok(())
 }

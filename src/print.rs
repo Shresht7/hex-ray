@@ -5,6 +5,28 @@ use crate::format::Format;
 use crate::helpers;
 
 impl Args {
+    pub fn out<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
+    where
+        T: std::io::BufRead,
+    {
+        let size = 1;
+        // Buffer to store the data
+        let mut buffer = vec![0; size];
+
+        loop {
+            let bytes_read = data.read(&mut buffer[0..size])?;
+            if bytes_read == 0 {
+                break;
+            }
+
+            buffer
+                .iter()
+                .for_each(|x| print!("{} ", self.format.format(*x)))
+        }
+
+        Ok(())
+    }
+
     /// Print out the hex-dump of the given byte data
     pub fn dump<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
     where

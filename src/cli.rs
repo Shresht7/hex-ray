@@ -49,6 +49,10 @@ pub struct Args {
     /// Simple Output
     #[arg(alias = "plain", short = 'p', long)]
     pub simple: bool,
+
+    /// Print just the output
+    #[arg(short, long)]
+    pub just_output: bool,
 }
 
 impl Args {
