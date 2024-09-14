@@ -14,13 +14,15 @@ pub struct Args {
     pub filepath: Option<std::path::PathBuf>,
 
     /// The byte offset at which to start reading; i.e. skip the given number of bytes.
+    ///
     /// You can specify a positive or negative integer value; A positive integer offset
     /// seeks forward from the start, while a negative offset seeks backwards from the end
     #[arg(aliases = ["skip", "seek"], short, long, default_value_t = 0)]
     pub offset: i64,
 
-    /// The number of bytes to read. The program will stop after reading
-    /// the specified number of bytes.
+    /// The number of bytes to read.
+    ///
+    /// The program will stop after reading the specified number of bytes.
     #[arg(short, long)]
     pub limit: Option<usize>,
 
