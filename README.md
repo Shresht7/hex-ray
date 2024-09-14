@@ -61,6 +61,9 @@ Here's an example of what the output will look like.
 
 <!-- TODO: Full help message -->
 
+> [!TIP]
+> `hex-ray` respects the `NO_COLOR` environment variable. ANSI colors will be disabled if `NO_COLOR` is set. You can pass in the `--no-color` flag to force disable the colors.
+
 ---
 
 ## License
