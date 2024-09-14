@@ -10,9 +10,12 @@ mod print;
 
 fn main() {
     let args = cli::Args::parse();
-    if let Err(e) = run(args) {
-        eprintln!("{}", e);
-        std::process::exit(1)
+    match run(args) {
+        Ok(_) => std::process::exit(0),
+        Err(e) => {
+            eprintln!("{}", e);
+            std::process::exit(1);
+        }
     }
 }
 
