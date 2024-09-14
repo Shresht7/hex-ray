@@ -13,7 +13,7 @@ fn main() {
     match run(args) {
         Ok(_) => std::process::exit(0),
         Err(e) => {
-            eprintln!("{}", e);
+            eprintln!("Error: {}", e);
             std::process::exit(1);
         }
     }
