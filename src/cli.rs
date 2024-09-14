@@ -43,13 +43,17 @@ pub struct Args {
     /// Disable ANSI colors
     #[arg(short, long)]
     pub no_color: bool,
+
+    /// Simple Output
+    #[arg(alias = "plain", short, long)]
+    pub simple: bool,
 }
 
 impl Args {
     /// Perform initialization setup
     pub fn init(self) -> Self {
         // Disable ANSI colors by setting the `NO_COLOR` env variable
-        if self.no_color {
+        if self.no_color || self.simple {
             std::env::set_var("NO_COLOR", "true");
         }
         self
