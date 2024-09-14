@@ -74,14 +74,18 @@ impl Args {
         let offset = self.format_offset(total_bytes_read);
         let hex_values = self.format_hex_values(&buffer, bytes_read);
         let ascii_values = self.format_ascii_representation(&buffer, bytes_read);
-        println!("│ {} │ {} │ {} │", offset, hex_values, ascii_values);
+        if self.simple {
+            println!("{}:  {}  | {}", offset, hex_values, ascii_values);
+        } else {
+            println!("│ {} │ {} │ {} │", offset, hex_values, ascii_values);
+        }
     }
 
     /// Print the offset column
     fn format_offset(&self, offset: usize) -> String {
         let res = Format::Octal.format(offset as u8);
-        if res.len() > 8 {
-            return format!("{}", res);
+        if res.len() > 8 || self.simple {
+            return format!("{:0>8}", res);
         }
 
         let mut padding = String::from(" ");
