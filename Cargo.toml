@@ -1,12 +1,13 @@
 [package]
 name = "hex-ray"
-description = "A hexdump utility"
+description = "A hexdump command-line utility"
 version = "0.1.0"
 edition = "2021"
 author = "Shresht7"
 license = "MIT"
 homepage = "https://github.com/Shresht7/hex-ray"
 repository = "https://github.com/Shresht7/hex-ray"
+keywords = ["hexdump", "cli"]
 
 [dependencies]
 clap = { version = "4.5.17", features = ["derive"] }
