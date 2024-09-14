@@ -32,7 +32,7 @@ pub struct Args {
 
     /// The output display format.
     ///
-    /// This can be one of the following: [hex, x] [HEX, X] [binary, b] [octal, o] [decimal, d].
+    /// This can be one of the following: hex (x), HEX (X), binary (b), octal (o), decimal (d).
     ///
     /// To output with the corresponding prefixes prepend a `#` to the format (e.g. `#hex` or `#x`)
     #[arg(short, long, default_value = "hex")]
