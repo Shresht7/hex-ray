@@ -1,6 +1,7 @@
 // Library
 use crate::cli::Args;
 use crate::cli::{Color, Colorable};
+use crate::format::Format;
 use crate::helpers;
 
 impl Args {
@@ -71,7 +72,7 @@ impl Args {
 
     /// Print the offset column
     fn format_offset(&self, offset: usize) -> String {
-        let res = helpers::Format::Octal.format(offset as u8);
+        let res = Format::Octal.format(offset as u8);
         if res.len() > 8 {
             return format!("{}", res);
         }
@@ -93,7 +94,7 @@ impl Args {
             if j > 0 && j % self.group_size == 0 {
                 s.push_str(" ");
             }
-            let value = helpers::Format::Hex.format(*byte);
+            let value = self.format.format(*byte);
             s.push_str(&value.ansi(Color::White)); // Format each byte as a 2-wide hexadecimal value
             s.push_str(" ");
         }

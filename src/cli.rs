@@ -1,5 +1,10 @@
 // Library
+use crate::format;
 use clap::Parser;
+
+// ----------------------
+// COMMAND LINE ARGUMENTS
+// ----------------------
 
 #[derive(Parser, Clone)]
 #[command(version, about)]
@@ -22,6 +27,12 @@ pub struct Args {
     /// The size of each row
     #[arg(short, long, default_value_t = 16)]
     pub size: usize,
+
+    /// The output display format.
+    ///
+    /// This can be one of the following: [hex, x] [HEX, X] [binary, b] [octal, o] [decimal, d]
+    #[arg(short, long, default_value = "hex")]
+    pub format: format::Format,
 
     /// Chunk the output into groups of this size
     #[arg(alias = "chunk", short, long, default_value_t = 4)]

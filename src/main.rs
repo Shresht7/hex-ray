@@ -4,6 +4,7 @@ use std::io::{BufReader, Seek};
 
 // Modules
 mod cli;
+mod format;
 mod helpers;
 mod print;
 
