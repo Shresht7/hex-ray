@@ -45,7 +45,7 @@ pub struct Args {
     pub no_color: bool,
 
     /// Simple Output
-    #[arg(alias = "plain", short, long)]
+    #[arg(alias = "plain", short = 'p', long)]
     pub simple: bool,
 }
 

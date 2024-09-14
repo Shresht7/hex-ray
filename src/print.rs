@@ -41,6 +41,10 @@ impl Args {
     }
 
     fn print_top_line(&self) {
+        if self.simple {
+            return;
+        }
+
         let mut line = String::from("┌─");
         line.push_str(&"─".repeat(8 + 2));
         line.push_str("┬─");
@@ -144,6 +148,10 @@ impl Args {
     }
 
     fn print_bottom_line(&self) {
+        if self.simple {
+            return;
+        }
+
         let mut line = String::from("└─");
         line.push_str(&"─".repeat(8 + 2));
         line.push_str("┴─");
