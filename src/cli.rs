@@ -1,7 +1,7 @@
 // Library
 use clap::Parser;
 
-#[derive(Parser)]
+#[derive(Parser, Clone)]
 #[command(version, about)]
 pub struct Args {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
