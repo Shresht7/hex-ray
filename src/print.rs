@@ -1,5 +1,6 @@
 // Library
 use crate::cli::Args;
+use crate::cli::{Color, Colorable};
 use crate::helpers;
 
 impl Args {
@@ -77,10 +78,10 @@ impl Args {
 
         let mut padding = String::from(" ");
         for _ in 0..(8 - res.len()) {
-            padding.push_str("·");
+            padding.push_str(&"·".ansi(Color::Black));
         }
 
-        format!("{}{}", padding, res)
+        format!("{}{}", padding, res.ansi(Color::White))
     }
 
     /// Print the hex-values columns
@@ -93,7 +94,7 @@ impl Args {
                 s.push_str(" ");
             }
             let value = helpers::Format::Hex.format(*byte);
-            s.push_str(&value); // Format each byte as a 2-wide hexadecimal value
+            s.push_str(&value.ansi(Color::White)); // Format each byte as a 2-wide hexadecimal value
             s.push_str(" ");
         }
 
@@ -119,9 +120,10 @@ impl Args {
             // If there are still bytes to read, print the ASCII character...
             if k < bytes_read {
                 let c = if helpers::is_printable_ascii_character(&byte) {
-                    format!("{}", *byte as char)
+                    let char = (*byte as char).to_string();
+                    format!("{}", char.ansi(Color::White))
                 } else {
-                    format!("·") // Non-printable ASCII characters are replaced by a dot
+                    format!("{}", "·".ansi(Color::Black)) // Non-printable ASCII characters are replaced by a dot
                 };
                 s.push_str(c.as_str());
             } else {
