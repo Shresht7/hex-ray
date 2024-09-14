@@ -18,6 +18,7 @@ impl Args {
         // The number of bytes remaining to be read
         let mut bytes_remaining = self.limit.unwrap_or(usize::MAX);
 
+        self.print_file_name();
         self.print_top_line();
 
         while bytes_remaining > 0 {
@@ -38,6 +39,16 @@ impl Args {
         self.print_total(total_bytes_read);
 
         Ok(())
+    }
+
+    fn print_file_name(&self) {
+        if !self.simple {
+            if let Some(filepath) = &self.filepath {
+                println!("Source: {}", filepath.to_string_lossy())
+            } else {
+                println!("Source: STDIN");
+            }
+        }
     }
 
     fn print_top_line(&self) {
