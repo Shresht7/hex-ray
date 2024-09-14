@@ -35,7 +35,7 @@ impl Args {
         }
 
         self.print_bottom_line();
-        println!("Read {} bytes\n", total_bytes_read);
+        self.print_total(total_bytes_read);
 
         Ok(())
     }
@@ -174,5 +174,12 @@ impl Args {
 
         line.push_str("─┘");
         println!("{}", line);
+    }
+
+    fn print_total(&self, n: usize) {
+        if self.simple {
+            return;
+        }
+        println!("Read {} bytes\n", n);
     }
 }
