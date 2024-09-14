@@ -101,8 +101,13 @@ impl Args {
         }
 
         // Print spacing if the chunk is less than size bytes
-        for _ in bytes_read..chunk.len() {
-            s.push_str("   "); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
+        for k in bytes_read..chunk.len() {
+            // Group values by applying spacing
+            if k > 0 && k % self.group_size == 0 {
+                s.push_str(" ");
+            }
+
+            s.push_str(&" ".repeat(self.format.size() + 1)); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
         }
 
         s
