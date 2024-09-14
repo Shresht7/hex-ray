@@ -37,6 +37,10 @@ pub struct Args {
     /// Chunk the output into groups of this size
     #[arg(alias = "chunk", short, long, default_value_t = 4)]
     pub group_size: usize,
+
+    /// Disable ANSI colors
+    #[arg(short, long)]
+    pub no_color: bool,
 }
 
 // ----------

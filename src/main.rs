@@ -10,6 +10,12 @@ mod print;
 
 fn main() {
     let args = cli::Args::parse();
+
+    // Disable ANSI colors by setting the `NO_COLOR` env variable
+    if args.no_color {
+        std::env::set_var("NO_COLOR", "true");
+    }
+
     match run(args) {
         Ok(_) => std::process::exit(0),
         Err(e) => {
