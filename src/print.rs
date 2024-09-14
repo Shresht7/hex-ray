@@ -35,6 +35,7 @@ impl Args {
         }
 
         self.print_bottom_line();
+        println!("Read {} bytes\n", total_bytes_read);
 
         Ok(())
     }
