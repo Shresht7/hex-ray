@@ -1,5 +1,5 @@
 // Library
-use crate::format;
+use crate::{format, helpers};
 use clap::Parser;
 
 // ----------------------
@@ -95,7 +95,7 @@ pub trait Colorable {
 
 impl Colorable for &'static str {
     fn ansi(&self, code: Color) -> String {
-        if !std::env::var("NO_COLOR").is_ok_and(|e| e.to_lowercase() == "true") {
+        if helpers::color_enabled() {
             format!("\u{001b}[{}m{}\u{001b}[0m", code as u8, &self)
         } else {
             self.to_string()
@@ -105,7 +105,7 @@ impl Colorable for &'static str {
 
 impl Colorable for String {
     fn ansi(&self, code: Color) -> String {
-        if !std::env::var("NO_COLOR").is_ok_and(|e| e.to_lowercase() == "true") {
+        if helpers::color_enabled() {
             format!("\u{001b}[{}m{}\u{001b}[0m", code as u8, &self)
         } else {
             self.to_string()
