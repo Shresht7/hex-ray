@@ -18,6 +18,8 @@ pub struct Args {
 
 #[derive(clap::Subcommand, Clone)]
 pub enum Command {
+    /// Prints the plain output
     View(cmd::View),
+    /// View the output in a tabulated format
     Output(cmd::Output),
 }

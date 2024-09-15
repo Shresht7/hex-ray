@@ -8,7 +8,7 @@ use clap::Parser;
 // --------------
 
 #[derive(Parser, Clone)]
-#[command(version, about = "Prints the plain output")]
+#[command(version, about)]
 pub struct Output {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases = ["path", "src"])]
