@@ -3,8 +3,7 @@ use clap::Parser;
 
 // Modules
 mod cli;
-mod format;
-mod helpers;
+mod utils;
 
 fn main() {
     let args = cli::Args::parse();

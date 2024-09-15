@@ -1,7 +1,7 @@
 // Library
-use crate::{
-    cli::{Color, Colorable},
-    format::{self, Format},
+use crate::utils::{
+    ansi::{Color, Colorable},
+    format::Format,
     helpers,
 };
 use clap::Parser;
@@ -41,7 +41,7 @@ pub struct View {
     ///
     /// To output with the corresponding prefixes prepend a `#` to the format (e.g. `#hex` or `#x`)
     #[arg(short, long, default_value = "hex")]
-    pub format: format::Format,
+    pub format: Format,
 
     /// Chunk the output into groups of this size
     #[arg(alias = "chunk", short, long, default_value_t = 4)]
