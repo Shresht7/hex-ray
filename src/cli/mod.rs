@@ -22,4 +22,6 @@ pub enum Command {
     View(cmd::View),
     /// View the output in a tabulated format
     Output(cmd::Output),
+    /// Run the Terminal User Interface
+    Tui(cmd::Tui),
 }
