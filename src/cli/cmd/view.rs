@@ -11,7 +11,7 @@ use clap::Parser;
 // ------------
 
 #[derive(Parser, Clone)]
-#[command(version, about)]
+#[command(version, about = "View the output in a tabulated format")]
 pub struct View {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases = ["path", "src"])]
