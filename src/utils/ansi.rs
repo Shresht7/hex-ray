@@ -24,7 +24,7 @@ pub enum Color {
     // Blue,
     // Magenta,
     // Cyan,
-    White,
+    White = 37,
     // Default = 39,
     // BgBlack = 40,
     // BgRed,
