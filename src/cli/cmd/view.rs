@@ -5,7 +5,6 @@ use crate::utils::{
     helpers,
 };
 use clap::Parser;
-use std::io::{BufReader, Seek};
 
 // ------------
 // VIEW COMMAND
@@ -66,21 +65,21 @@ impl View {
         self
     }
 
-    pub fn execute(mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn execute(self) -> Result<(), Box<dyn std::error::Error>> {
         self.init();
 
-        let reader = match &self.filepath.clone() {
+        let (reader, offset) = match &self.filepath.clone() {
             // If a `filepath` was passed in the arguments, read the file ...
-            Some(filepath) => get_file_reader(filepath, &mut self),
+            Some(filepath) => helpers::get_file_reader(filepath, self.offset),
             // otherwise, read the input from stdin.
-            None => get_stdin_reader(&mut self),
+            None => helpers::get_stdin_reader(),
         }?;
 
-        Ok(self.dump(reader)?)
+        Ok(self.dump(reader, offset)?)
     }
 
     /// Print out the hex-dump of the given byte data
-    fn dump<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
+    fn dump<T>(&self, mut data: T, offset: usize) -> Result<(), Box<dyn std::error::Error>>
     where
         T: std::io::Read,
     {
@@ -104,7 +103,7 @@ impl View {
                 break;
             }
 
-            self.print_line(&buffer, bytes_read, self.offset as usize + total_bytes_read);
+            self.print_line(&buffer, bytes_read, offset + total_bytes_read);
             total_bytes_read += bytes_read;
             bytes_remaining -= bytes_read;
         }
@@ -271,29 +270,4 @@ impl View {
         }
         println!("Read {} bytes\n", n);
     }
-}
-
-fn get_stdin_reader(
-    args: &mut View,
-) -> Result<Box<dyn std::io::BufRead>, Box<dyn std::error::Error>> {
-    args.offset = 0; // Offset is not supported in this mode
-    let data = std::io::stdin();
-    Ok(Box::new(BufReader::new(data)))
-}
-
-fn get_file_reader(
-    filepath: &std::path::PathBuf,
-    args: &mut View,
-) -> Result<Box<dyn std::io::BufRead>, Box<dyn std::error::Error>> {
-    let mut file = std::fs::File::open(filepath)?;
-    // A positive offset seeks forwards from the start of the file
-    if args.offset >= 0 {
-        file.seek(std::io::SeekFrom::Start(args.offset as u64))?;
-    } else if args.offset < 0 {
-        // ... while an negative offset seeks backwards from the end of the file
-        let file_size = file.seek(std::io::SeekFrom::End(0))?;
-        file.seek(std::io::SeekFrom::End(args.offset))?;
-        args.offset = file_size as i64 + args.offset;
-    }
-    Ok(Box::new(BufReader::new(file)))
 }
