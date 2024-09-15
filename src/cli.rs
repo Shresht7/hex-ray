@@ -9,6 +9,20 @@ use clap::Parser;
 #[derive(Parser, Clone)]
 #[command(version, about)]
 pub struct Args {
+    /// Subcommand
+    #[clap(subcommand)]
+    pub cmd: Option<Command>,
+}
+
+#[derive(clap::Subcommand, Clone)]
+pub enum Command {
+    View(View),
+    Output,
+}
+
+#[derive(Parser, Clone)]
+#[command(version, about)]
+pub struct View {
     /// Path to the file to read (defaults to reading from `stdin` if empty)
     #[clap(aliases = ["path", "src"])]
     pub filepath: Option<std::path::PathBuf>,
@@ -49,15 +63,11 @@ pub struct Args {
     /// Simple Output
     #[arg(alias = "plain", short = 'p', long)]
     pub simple: bool,
-
-    /// Print just the output
-    #[arg(short, long)]
-    pub just_output: bool,
 }
 
-impl Args {
+impl View {
     /// Perform initialization setup
-    pub fn init(self) -> Self {
+    pub fn init(&self) -> &Self {
         // Disable ANSI colors by setting the `NO_COLOR` env variable
         if self.no_color || self.simple {
             std::env::set_var("NO_COLOR", "true");

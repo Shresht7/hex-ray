@@ -9,7 +9,7 @@ mod helpers;
 mod print;
 
 fn main() {
-    let args = cli::Args::parse().init();
+    let args = cli::Args::parse();
     match run(args) {
         Ok(_) => std::process::exit(0),
         Err(e) => {
@@ -20,26 +20,26 @@ fn main() {
 }
 
 fn run(args: cli::Args) -> Result<(), Box<dyn std::error::Error>> {
-    let mut cfg = args.clone();
+    let ret = match args.cmd {
+        Some(cli::Command::View(mut cmd)) => {
+            cmd.init();
 
-    let reader = match &args.filepath {
-        // If a `filepath` was passed in the arguments, read the file ...
-        Some(filepath) => get_file_reader(filepath, &mut cfg),
-        // otherwise, read the input from stdin.
-        None => get_stdin_reader(&mut cfg),
-    }?;
+            let reader = match &cmd.filepath.clone() {
+                // If a `filepath` was passed in the arguments, read the file ...
+                Some(filepath) => get_file_reader(filepath, &mut cmd),
+                // otherwise, read the input from stdin.
+                None => get_stdin_reader(&mut cmd),
+            }?;
 
-    if cfg.just_output {
-        cfg.out(reader)?;
-    } else {
-        cfg.dump(reader)?;
-    }
-
-    Ok(())
+            cmd.dump(reader)?
+        }
+        _ => {}
+    };
+    Ok(ret)
 }
 
 fn get_stdin_reader(
-    args: &mut cli::Args,
+    args: &mut cli::View,
 ) -> Result<Box<dyn std::io::BufRead>, Box<dyn std::error::Error>> {
     args.offset = 0; // Offset is not supported in this mode
     let data = std::io::stdin();
@@ -48,7 +48,7 @@ fn get_stdin_reader(
 
 fn get_file_reader(
     filepath: &std::path::PathBuf,
-    args: &mut cli::Args,
+    args: &mut cli::View,
 ) -> Result<Box<dyn std::io::BufRead>, Box<dyn std::error::Error>> {
     let mut file = std::fs::File::open(filepath)?;
     // A positive offset seeks forwards from the start of the file

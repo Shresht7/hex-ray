@@ -1,10 +1,10 @@
 // Library
-use crate::cli::Args;
+use crate::cli;
 use crate::cli::{Color, Colorable};
 use crate::format::Format;
 use crate::helpers;
 
-impl Args {
+impl cli::View {
     pub fn out<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
     where
         T: std::io::BufRead,
