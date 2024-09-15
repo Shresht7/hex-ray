@@ -19,5 +19,5 @@ pub struct Args {
 #[derive(clap::Subcommand, Clone)]
 pub enum Command {
     View(cmd::View),
-    Output,
+    Output(cmd::Output),
 }
