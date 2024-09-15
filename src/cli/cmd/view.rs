@@ -1,34 +1,85 @@
 // Library
-use crate::cli::Args;
-use crate::cli::{Color, Colorable};
-use crate::format::Format;
-use crate::helpers;
+use crate::utils::{
+    ansi::{Color, Colorable},
+    format::Format,
+    helpers,
+};
+use clap::Parser;
 
-impl Args {
-    pub fn out<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
-    where
-        T: std::io::BufRead,
-    {
-        let size = 1;
-        // Buffer to store the data
-        let mut buffer = vec![0; size];
+// ------------
+// VIEW COMMAND
+// ------------
 
-        loop {
-            let bytes_read = data.read(&mut buffer[0..size])?;
-            if bytes_read == 0 {
-                break;
-            }
+#[derive(Parser, Clone)]
+#[command(version, about)]
+pub struct View {
+    /// Path to the file to read (defaults to reading from `stdin` if empty)
+    #[clap(aliases = ["path", "src"])]
+    pub filepath: Option<std::path::PathBuf>,
 
-            buffer
-                .iter()
-                .for_each(|x| print!("{} ", self.format.format(*x)))
+    /// The byte offset at which to start reading; i.e. skip the given number of bytes.
+    ///
+    /// You can specify a positive or negative integer value; A positive integer offset
+    /// seeks forward from the start, while a negative offset seeks backwards from the end
+    #[arg(aliases = ["skip", "seek"], short, long, default_value_t = 0)]
+    pub offset: i64,
+
+    /// The number of bytes to read.
+    ///
+    /// The program will stop after reading the specified number of bytes.
+    #[arg(short, long)]
+    pub limit: Option<usize>,
+
+    /// The size of each row
+    #[arg(short, long, default_value_t = 16)]
+    pub size: usize,
+
+    /// The output display format.
+    ///
+    /// This can be one of the following: hex (x), HEX (X), binary (b), octal (o), decimal (d).
+    ///
+    /// To output with the corresponding prefixes prepend a `#` to the format (e.g. `#hex` or `#x`)
+    #[arg(short, long, default_value = "hex")]
+    pub format: Format,
+
+    /// Chunk the output into groups of this size
+    #[arg(alias = "chunk", short, long, default_value_t = 4)]
+    pub group_size: usize,
+
+    /// Disable ANSI colors
+    #[arg(short, long)]
+    pub no_color: bool,
+
+    /// Simple Output
+    #[arg(alias = "plain", short = 'p', long)]
+    pub simple: bool,
+}
+
+impl View {
+    /// Perform initialization setup
+    fn init(&self) -> &Self {
+        // Disable ANSI colors by setting the `NO_COLOR` env variable
+        if self.no_color || self.simple {
+            std::env::set_var("NO_COLOR", "true");
         }
+        self
+    }
 
-        Ok(())
+    pub fn execute(self) -> Result<(), Box<dyn std::error::Error>> {
+        self.init();
+
+        let (reader, offset) = match &self.filepath.clone() {
+            // If a `filepath` was passed in the arguments, read the file ...
+            Some(filepath) => helpers::get_file_reader(filepath, self.offset),
+            // otherwise, read the input from stdin.
+            None => helpers::get_stdin_reader(),
+        }?;
+
+        Ok(self.dump(reader, offset)?)
     }
 
     /// Print out the hex-dump of the given byte data
-    pub fn dump<T>(&self, mut data: T) -> Result<(), Box<dyn std::error::Error>>
+    fn dump<T>(&self, mut data: T, offset: usize) -> Result<(), Box<dyn std::error::Error>>
     where
         T: std::io::Read,
     {
@@ -52,7 +103,7 @@ impl Args {
                 break;
             }
 
-            self.print_line(&buffer, bytes_read, self.offset as usize + total_bytes_read);
+            self.print_line(&buffer, bytes_read, offset + total_bytes_read);
             total_bytes_read += bytes_read;
             bytes_remaining -= bytes_read;
         }
