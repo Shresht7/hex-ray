@@ -1,6 +1,14 @@
-// Library
-use super::helpers;
+// --------------------------
+// COLOR ENVIRONMENT VARIABLE
+// --------------------------
 
+/// The string representing the NO_COLOR environment variable
+const ENV_NO_COLOR: &str = "NO_COLOR";
+
+/// Returns a boolean to indicate whether ANSI Colors are enabled
+pub fn is_color_enabled() -> bool {
+    !std::env::var(ENV_NO_COLOR).is_ok_and(|e| e.to_lowercase() == "true")
+}
 // ----------
 // ANSI CODES
 // ----------
@@ -53,7 +61,7 @@ pub trait Colorable {
 
 impl Colorable for &'static str {
     fn ansi(&self, code: Color) -> String {
-        if helpers::color_enabled() {
+        if is_color_enabled() {
             format!("\u{001b}[{}m{}\u{001b}[0m", code as u8, &self)
         } else {
             self.to_string()
@@ -63,7 +71,7 @@ impl Colorable for &'static str {
 
 impl Colorable for String {
     fn ansi(&self, code: Color) -> String {
-        if helpers::color_enabled() {
+        if is_color_enabled() {
             format!("\u{001b}[{}m{}\u{001b}[0m", code as u8, &self)
         } else {
             self.to_string()

@@ -11,14 +11,6 @@ pub fn is_printable_ascii_character(byte: &u8) -> bool {
     byte.is_ascii_graphic() || !byte.is_ascii_whitespace()
 }
 
-/// The string representing the NO_COLOR environment variable
-const ENV_NO_COLOR: &str = "NO_COLOR";
-
-/// Returns a boolean to indicate whether ANSI Colors are enabled
-pub fn color_enabled() -> bool {
-    !std::env::var(ENV_NO_COLOR).is_ok_and(|e| e.to_lowercase() == "true")
-}
-
 pub fn get_stdin_reader() -> Result<(Box<dyn std::io::BufRead>, usize), Box<dyn std::error::Error>>
 {
     let offset = 0; // Offset is not supported in this mode
