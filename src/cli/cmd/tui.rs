@@ -136,11 +136,6 @@ struct App {
 }
 
 impl App {
-    fn push(&mut self, row: Row) -> &Self {
-        self.data.push(row);
-        self
-    }
-
     fn parse<T>(
         &mut self,
         cfg: &mut View,
@@ -168,7 +163,7 @@ impl App {
             }
 
             let row = Row::parse(&buffer, offset, cfg.group_size, bytes_read);
-            self.push(row);
+            self.data.push(row);
 
             self.total_bytes += bytes_read;
             bytes_remaining -= bytes_read;
