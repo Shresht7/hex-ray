@@ -202,7 +202,9 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Up => self.move_selection_up(),
             KeyCode::Right => self.move_selection_left(),
+            KeyCode::Down => self.move_selection_down(),
             KeyCode::Left => self.move_selection_right(),
             _ => {}
         }
@@ -212,10 +214,10 @@ impl App {
     // COMMAND HANDLERS
     // ----------------
 
-    /// Select the next element
-    fn move_selection_left(&mut self) {
-        if self.selected < self.total_bytes - 1 {
-            self.selected += 1;
+    // Select the element in the row above
+    fn move_selection_up(&mut self) {
+        if self.selected > self.cfg.size {
+            self.selected -= self.cfg.size;
         }
     }
 
@@ -223,6 +225,20 @@ impl App {
     fn move_selection_right(&mut self) {
         if self.selected > 0 {
             self.selected -= 1;
+        }
+    }
+
+    // Select the element in the row above
+    fn move_selection_down(&mut self) {
+        if self.selected + self.cfg.size < self.total_bytes {
+            self.selected += self.cfg.size;
+        }
+    }
+
+    /// Select the next element
+    fn move_selection_left(&mut self) {
+        if self.selected < self.total_bytes - 1 {
+            self.selected += 1;
         }
     }
 
