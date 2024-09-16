@@ -30,7 +30,7 @@ impl Row {
             return Line::from(Span::from(s));
         }
 
-        let mut padding_str = String::from(" ");
+        let mut padding_str = String::from("");
         for _ in 0..(8 - res.len()) {
             padding_str.push_str(&"·");
         }
