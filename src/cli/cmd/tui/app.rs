@@ -97,15 +97,20 @@ impl App {
             .constraints([Constraint::Length(self.data.len() as u16 + 2)].as_ref())
             .split(f.area());
 
+        let offset_len = 8 + 4;
+        let hex_len = ((self.cfg.format.size() + 1) * self.cfg.size)
+            + (self.cfg.size / self.cfg.group_size)
+            + 2;
+        let ascii_len = (self.cfg.size + 1) + (self.cfg.size / self.cfg.group_size) + 2;
+
         // Create a layout with three vertical sections
         let columns = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(
                 [
-                    // TODO: Determine the lengths using the size parameters
-                    Constraint::Length(12), // Offset
-                    Constraint::Length(56), // Hex Values
-                    Constraint::Length(24), // ASCII Values
+                    Constraint::Length(offset_len),       // Offset
+                    Constraint::Length(hex_len as u16),   // Hex Values
+                    Constraint::Length(ascii_len as u16), // ASCII Values
                 ]
                 .as_ref(),
             )
@@ -160,12 +165,15 @@ impl App {
 
         let offset_paragraph = Paragraph::new(offset_data)
             .block(offset_block)
+            .alignment(Alignment::Center)
             .style(Style::default().fg(Color::White));
         let hex_paragraph = Paragraph::new(hex_data)
             .block(hex_block)
+            .alignment(Alignment::Center)
             .style(Style::default().fg(Color::White));
         let ascii_paragraph = Paragraph::new(ascii_data)
             .block(ascii_block)
+            .alignment(Alignment::Center)
             .style(Style::default().fg(Color::White));
 
         f.render_widget(offset_paragraph, columns[0]);
