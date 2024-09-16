@@ -1,6 +1,8 @@
 // Library
 mod app;
+mod events;
 mod row;
+mod ui;
 
 // Library
 use super::View;
