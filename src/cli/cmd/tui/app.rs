@@ -104,8 +104,8 @@ impl App {
                 [
                     // TODO: Determine the lengths using the size parameters
                     Constraint::Length(12), // Offset
-                    Constraint::Length(52), // Hex Values
-                    Constraint::Length(20), // ASCII Values
+                    Constraint::Length(56), // Hex Values
+                    Constraint::Length(24), // ASCII Values
                 ]
                 .as_ref(),
             )
@@ -131,6 +131,12 @@ impl App {
             let mut hex_spans = Vec::new();
             let mut ascii_spans = Vec::new();
             for (j, byte) in row.data.iter().enumerate() {
+                // Group values by applying spacing
+                if j > 0 && j % self.cfg.group_size == 0 {
+                    hex_spans.push(Span::from(" "));
+                    ascii_spans.push(Span::from(" "));
+                }
+
                 let byte_str = self.cfg.format.format(*byte);
                 let ascii_str = if helpers::is_printable_ascii_character(byte) {
                     (*byte as char).to_string()
@@ -144,6 +150,7 @@ impl App {
                     regular_styles
                 };
                 hex_spans.push(Span::styled(byte_str, style));
+                hex_spans.push(Span::from(" "));
                 ascii_spans.push(Span::styled(ascii_str, style));
             }
 
