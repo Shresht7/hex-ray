@@ -1,3 +1,6 @@
+use ratatui::style::{Color, Style};
+use ratatui::text::{Line, Span};
+
 // Library
 use crate::utils::format::Format;
 use crate::utils::helpers;
@@ -20,18 +23,20 @@ impl Row {
         }
     }
 
-    pub fn format_offset(&self) -> String {
+    pub fn format_offset(&self) -> Line {
         let res = Format::Octal.format(self.offset as u8);
         if res.len() > 8 {
-            return format!("{:0>8}", res);
+            let s = format!("{:0>8}", res);
+            return Line::from(Span::from(s));
         }
 
-        let mut padding = String::from(" ");
+        let mut padding_str = String::from(" ");
         for _ in 0..(8 - res.len()) {
-            padding.push_str(&"·");
+            padding_str.push_str(&"·");
         }
+        let padding = Span::styled(padding_str, Style::default().fg(Color::Gray));
 
-        format!("{}{}", padding, res)
+        Line::from(vec![padding, Span::from(res)])
     }
 
     pub fn format_hex_values(&self, selected: usize) -> String {
