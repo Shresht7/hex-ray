@@ -1,4 +1,5 @@
 // Library
+use super::View;
 use crate::utils::format::Format;
 use crate::utils::helpers;
 
@@ -16,16 +17,18 @@ use ratatui::{
     DefaultTerminal, Frame,
 };
 
-use super::View;
-
 impl View {
     pub fn execute_tui(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        self.init();
+
         let (reader, offset) = helpers::get_reader_and_offset(self.filepath.as_ref(), self.offset)?;
+
         let mut app = App::default();
+        app.parse(self, reader, offset)?;
 
         let mut terminal = ratatui::init();
         terminal.clear()?;
-        let app_result = app.parse(self, reader, offset)?.run(&mut terminal);
+        let app_result = app.run(&mut terminal);
         ratatui::restore();
         app_result
     }
