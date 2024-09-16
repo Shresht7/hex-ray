@@ -3,22 +3,24 @@ use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::block::Title;
-use ratatui::widgets::{Block, Borders, Cell, Paragraph, Row, Table, Widget};
+use ratatui::widgets::{Block, Borders, Paragraph};
 use ratatui::{DefaultTerminal, Frame};
 
+use super::row::Row;
 use super::View;
 
+/// The main application state
 #[derive(Debug, Default)]
 pub struct App {
-    cfg: View,
-    data: Vec<super::row::Row>,
-    total_bytes: usize,
-    selected: usize,
-    exit: bool,
+    cfg: View,          // Configuration parameters
+    data: Vec<Row>,     // The 2-D vector of data
+    total_bytes: usize, // The total count of bytes
+    selected: usize,    // The index of the selected byte
+    exit: bool,         // Should exit the application
 }
 
 impl App {
+    /// Instantiate a new instance of the application from the configuration parameters
     pub fn new(cfg: View) -> Self {
         Self {
             cfg,
@@ -26,9 +28,10 @@ impl App {
         }
     }
 
+    /// Parse the data from the reader
     pub fn parse<T>(
         &mut self,
-        mut data: T,
+        mut reader: T,
         offset: usize,
     ) -> Result<&mut Self, Box<dyn std::error::Error>>
     where
@@ -40,16 +43,19 @@ impl App {
         // The number of bytes remaining to be read
         let mut bytes_remaining = self.cfg.limit.unwrap_or(usize::MAX);
 
+        // Keep iterating until we run out of bytes to read
         while bytes_remaining > 0 {
             // Determine the number of bytes to be read in this iteration
             let bytes_to_read = std::cmp::min(bytes_remaining, self.cfg.size);
 
-            let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
+            // Read the bytes into the buffer
+            let bytes_read = reader.read(&mut buffer[0..bytes_to_read])?;
             if bytes_read == 0 {
-                break;
+                break; // break the loop if no bytes were read
             }
 
-            let row = super::row::Row::parse(
+            // Add the row data to the vector
+            let row = Row::parse(
                 &buffer,
                 offset + self.total_bytes,
                 self.cfg.group_size,
@@ -57,6 +63,7 @@ impl App {
             );
             self.data.push(row);
 
+            // Update the total bytes and the number of bytes remaining
             self.total_bytes += bytes_read;
             bytes_remaining -= bytes_read;
         }
@@ -64,6 +71,7 @@ impl App {
         Ok(self)
     }
 
+    /// Run the application in the terminal
     pub fn run(
         &mut self,
         terminal: &mut DefaultTerminal,
@@ -169,6 +177,7 @@ impl App {
         Ok(())
     }
 
+    /// matches the given key-event and calls the corresponding handler
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
@@ -178,16 +187,23 @@ impl App {
         }
     }
 
+    // ----------------
+    // COMMAND HANDLERS
+    // ----------------
+
+    /// Exits the application
     fn exit(&mut self) {
         self.exit = true;
     }
 
+    /// Select the next element
     fn increment(&mut self) {
         if self.selected < self.total_bytes - 1 {
             self.selected += 1;
         }
     }
 
+    /// Select the previous element
     fn decrement(&mut self) {
         if self.selected > 0 {
             self.selected -= 1;
