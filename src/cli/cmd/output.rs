@@ -42,13 +42,7 @@ pub struct Output {
 
 impl Output {
     pub fn execute(self) -> Result<(), Box<dyn std::error::Error>> {
-        let (reader, _) = match &self.filepath.clone() {
-            // If a `filepath` was passed in the arguments, read the file ...
-            Some(filepath) => helpers::get_file_reader(filepath, self.offset),
-            // otherwise, read the input from stdin.
-            None => helpers::get_stdin_reader(),
-        }?;
-
+        let (reader, _) = helpers::get_reader_and_offset(self.filepath.as_ref(), self.offset)?;
         Ok(self.dump(reader)?)
     }
 
