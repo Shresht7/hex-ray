@@ -1,6 +1,6 @@
 // Library
 use crate::utils::format::Format;
-use clap::Parser;
+use crate::utils::helpers;
 
 use crossterm::event::{Event, KeyEvent};
 use ratatui::{
@@ -16,64 +16,170 @@ use ratatui::{
     DefaultTerminal, Frame,
 };
 
-// -----------
-// TUI COMMAND
-// -----------
+use super::View;
 
-#[derive(Parser, Clone)]
-#[command(version, about)]
-pub struct Tui {
-    /// Path to the file to read (defaults to reading from `stdin` if empty)
-    #[clap(aliases = ["path", "src"])]
-    pub filepath: Option<std::path::PathBuf>,
+impl View {
+    pub fn execute_tui(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let (reader, offset) = match &self.filepath.clone() {
+            // If a `filepath` was passed in the arguments, read the file ...
+            Some(filepath) => helpers::get_file_reader(filepath, self.offset),
+            // otherwise, read the input from stdin.
+            None => helpers::get_stdin_reader(),
+        }?;
 
-    /// The byte offset at which to start reading; i.e. skip the given number of bytes.
-    ///
-    /// You can specify a positive or negative integer value; A positive integer offset
-    /// seeks forward from the start, while a negative offset seeks backwards from the end
-    #[arg(aliases = ["skip", "seek"], short, long, default_value_t = 0)]
-    pub offset: i64,
+        let mut app = App::default();
 
-    /// The number of bytes to read.
-    ///
-    /// The program will stop after reading the specified number of bytes.
-    #[arg(short, long)]
-    pub limit: Option<usize>,
-
-    /// The size of each row
-    #[arg(short, long, default_value_t = 16)]
-    pub size: usize,
-
-    /// The output display format.
-    ///
-    /// This can be one of the following: hex (x), HEX (X), binary (b), octal (o), decimal (d).
-    ///
-    /// To output with the corresponding prefixes prepend a `#` to the format (e.g. `#hex` or `#x`)
-    #[arg(short, long, default_value = "hex")]
-    pub format: Format,
-
-    /// Chunk the output into groups of this size
-    #[arg(alias = "chunk", short, long, default_value_t = 4)]
-    pub group_size: usize,
-}
-
-impl Tui {
-    pub fn execute(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let mut terminal = ratatui::init();
         terminal.clear()?;
-        let app_result = App::default().run(&mut terminal);
+        let app_result = app.parse(self, reader, offset)?.run(&mut terminal);
         ratatui::restore();
         app_result
     }
 }
 
+#[derive(Debug)]
+struct Row {
+    data: Vec<u8>,
+    offset: usize,
+    group_size: usize,
+    bytes_read: usize,
+}
+
+impl Row {
+    fn parse(data: &[u8], offset: usize, group_size: usize, bytes_read: usize) -> Self {
+        Self {
+            data: data.to_vec(),
+            offset,
+            group_size,
+            bytes_read,
+        }
+    }
+
+    fn to_string(&self) -> String {
+        let offset = self.format_offset();
+        let hex_values = self.format_hex_values();
+        let ascii_values = self.format_ascii_representation();
+        format!("│ {} │ {} │ {} │", offset, hex_values, ascii_values)
+    }
+
+    fn format_offset(&self) -> String {
+        let res = Format::Octal.format(self.offset as u8);
+        if res.len() > 8 {
+            return format!("{:0>8}", res);
+        }
+
+        let mut padding = String::from(" ");
+        for _ in 0..(8 - res.len()) {
+            padding.push_str(&"·");
+        }
+
+        format!("{}{}", padding, res)
+    }
+
+    fn format_hex_values(&self) -> String {
+        let mut s = String::new();
+        // Print the hex values
+        for (j, byte) in self.data.iter().take(self.bytes_read).enumerate() {
+            // Group values by applying spacing
+            if j > 0 && j % self.group_size == 0 {
+                s.push_str(" ");
+            }
+            let value = Format::Hex.format(*byte);
+            s.push_str(&value); // Format each byte as a 2-wide hexadecimal value
+            s.push_str(" ");
+        }
+
+        // Print spacing if the chunk is less than size bytes
+        for k in self.bytes_read..self.data.len() {
+            // Group values by applying spacing
+            if k > 0 && k % self.group_size == 0 {
+                s.push_str(" ");
+            }
+            // Group values by applying spacing
+            s.push_str(&" ".repeat(Format::Hex.size() + 1)); // Each missing byte is represented by 3 spaces (two for hex-digits and one space)
+        }
+
+        s
+    }
+
+    /// Print the ASCII columns
+    fn format_ascii_representation(&self) -> String {
+        let mut s = String::new();
+
+        // Print the ASCII representation
+        for (k, byte) in self.data.iter().enumerate() {
+            // Group characters by applying spacing
+            if k > 0 && k % self.group_size == 0 {
+                s.push_str(" ");
+            }
+            // If there are still bytes to read, print the ASCII character...
+            if k < self.bytes_read {
+                let c = if helpers::is_printable_ascii_character(&byte) {
+                    let char = (*byte as char).to_string();
+                    format!("{}", char)
+                } else {
+                    format!("{}", "·") // Non-printable ASCII characters are replaced by a dot
+                };
+                s.push_str(c.as_str());
+            } else {
+                s.push_str(" "); // Else if there are no more bytes left in this iteration, just print an empty space
+            }
+        }
+
+        s
+    }
+}
+
 #[derive(Debug, Default)]
 struct App {
-    counter: u8,
+    data: Vec<Row>,
+    total_bytes: usize,
+    size: usize,
     exit: bool,
 }
 
 impl App {
+    fn push(&mut self, row: Row) -> &Self {
+        self.data.push(row);
+        self
+    }
+
+    fn parse<T>(
+        &mut self,
+        cfg: &mut View,
+        mut data: T,
+        offset: usize,
+    ) -> Result<&mut Self, Box<dyn std::error::Error>>
+    where
+        T: std::io::BufRead,
+    {
+        self.size = cfg.size;
+
+        // Buffer to store the data
+        let mut buffer = vec![0; self.size];
+
+        // The number of bytes remaining to be read
+        let mut bytes_remaining = cfg.limit.unwrap_or(usize::MAX);
+
+        while bytes_remaining > 0 {
+            // Determine the number of bytes to be read in this iteration
+            let bytes_to_read = std::cmp::min(bytes_remaining, self.size);
+
+            let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
+            if bytes_read == 0 {
+                break;
+            }
+
+            let row = Row::parse(&buffer, offset, cfg.group_size, bytes_read);
+            self.push(row);
+
+            self.total_bytes += bytes_read;
+            bytes_remaining -= bytes_read;
+        }
+
+        Ok(self)
+    }
+
     pub fn run(
         &mut self,
         terminal: &mut DefaultTerminal,
@@ -106,22 +212,12 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Right => self.increment(),
-            KeyCode::Left => self.decrement(),
             _ => {}
         }
     }
 
     fn exit(&mut self) {
         self.exit = true;
-    }
-
-    fn increment(&mut self) {
-        self.counter += 1;
-    }
-
-    fn decrement(&mut self) {
-        self.counter -= 1;
     }
 }
 
@@ -149,14 +245,13 @@ impl Widget for &App {
             )
             .border_set(border::THICK);
 
-        let counter_text = Text::from(vec![Line::from(vec![
-            "Value: ".into(),
-            self.counter.to_string().yellow(),
-        ])]);
+        let lines: Vec<Line> = self
+            .data
+            .iter()
+            .map(|l| Line::from(l.to_string()))
+            .collect();
+        let counter_text = Text::from(lines);
 
-        Paragraph::new(counter_text)
-            .centered()
-            .block(block)
-            .render(area, buf);
+        Paragraph::new(counter_text).block(block).render(area, buf);
     }
 }
