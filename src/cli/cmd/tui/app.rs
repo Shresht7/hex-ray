@@ -6,40 +6,44 @@ use super::View;
 
 #[derive(Debug, Default)]
 pub struct App {
+    cfg: View,
     data: Vec<Row>,
     total_bytes: usize,
-    size: usize,
     exit: bool,
 }
 
 impl App {
+    pub fn new(cfg: View) -> Self {
+        Self {
+            cfg,
+            ..Default::default()
+        }
+    }
+
     pub fn parse<T>(
         &mut self,
-        cfg: &mut View,
         mut data: T,
         offset: usize,
     ) -> Result<&mut Self, Box<dyn std::error::Error>>
     where
         T: std::io::BufRead,
     {
-        self.size = cfg.size;
-
         // Buffer to store the data
-        let mut buffer = vec![0; self.size];
+        let mut buffer = vec![0; self.cfg.size];
 
         // The number of bytes remaining to be read
-        let mut bytes_remaining = cfg.limit.unwrap_or(usize::MAX);
+        let mut bytes_remaining = self.cfg.limit.unwrap_or(usize::MAX);
 
         while bytes_remaining > 0 {
             // Determine the number of bytes to be read in this iteration
-            let bytes_to_read = std::cmp::min(bytes_remaining, self.size);
+            let bytes_to_read = std::cmp::min(bytes_remaining, self.cfg.size);
 
             let bytes_read = data.read(&mut buffer[0..bytes_to_read])?;
             if bytes_read == 0 {
                 break;
             }
 
-            let row = Row::parse(&buffer, offset, cfg.group_size, bytes_read);
+            let row = Row::parse(&buffer, offset, self.cfg.group_size, bytes_read);
             self.data.push(row);
 
             self.total_bytes += bytes_read;
