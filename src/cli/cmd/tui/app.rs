@@ -6,6 +6,8 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Borders, Paragraph};
 use ratatui::{DefaultTerminal, Frame};
 
+use crate::utils::helpers;
+
 use super::row::Row;
 use super::View;
 
@@ -118,6 +120,9 @@ impl App {
         let mut hex_data = Vec::new();
         let mut ascii_data = Vec::new();
 
+        let selected_styles = Style::default().bg(Color::Yellow);
+        let regular_styles = Style::default().fg(Color::White);
+
         for (i, row) in self.data.iter().enumerate() {
             // Offset column
             offset_data.push(row.format_offset());
@@ -126,40 +131,35 @@ impl App {
             let mut hex_spans = Vec::new();
             let mut ascii_spans = Vec::new();
             for (j, byte) in row.data.iter().enumerate() {
-                let byte_str = format!("{:02x} ", byte);
-                let ascii_char = if byte.is_ascii_graphic() {
-                    *byte as char
+                let byte_str = self.cfg.format.format(*byte);
+                let ascii_str = if helpers::is_printable_ascii_character(byte) {
+                    (*byte as char).to_string()
                 } else {
-                    '.'
+                    String::from("·")
                 };
 
-                if i * self.cfg.size + j == self.selected {
-                    hex_spans.push(Span::styled(byte_str, Style::default().fg(Color::Yellow)));
-                    ascii_spans.push(Span::styled(
-                        format!("{}", ascii_char),
-                        Style::default().fg(Color::Yellow),
-                    ));
+                let style = if i * self.cfg.size + j == self.selected {
+                    selected_styles
                 } else {
-                    hex_spans.push(Span::styled(byte_str, Style::default().fg(Color::White)));
-                    ascii_spans.push(Span::styled(
-                        format!("{}", ascii_char),
-                        Style::default().fg(Color::White),
-                    ));
-                }
+                    regular_styles
+                };
+                hex_spans.push(Span::styled(byte_str, style));
+                ascii_spans.push(Span::styled(ascii_str, style));
             }
+
             hex_data.push(Line::from(hex_spans));
             ascii_data.push(Line::from(ascii_spans));
         }
 
         let offset_paragraph = Paragraph::new(offset_data)
             .block(offset_block)
-            .style(Style::default().fg(Color::White).bg(Color::Black));
+            .style(Style::default().fg(Color::White));
         let hex_paragraph = Paragraph::new(hex_data)
             .block(hex_block)
-            .style(Style::default().fg(Color::White).bg(Color::Black));
+            .style(Style::default().fg(Color::White));
         let ascii_paragraph = Paragraph::new(ascii_data)
             .block(ascii_block)
-            .style(Style::default().fg(Color::White).bg(Color::Black));
+            .style(Style::default().fg(Color::White));
 
         f.render_widget(offset_paragraph, columns[0]);
         f.render_widget(hex_paragraph, columns[1]);
