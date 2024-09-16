@@ -112,9 +112,9 @@ impl App {
             .split(base_layout[0]);
 
         // Create a block with borders and title for each column
-        let offset_block = Block::default().title("Offset").borders(Borders::ALL);
-        let hex_block = Block::default().title("Hex Values").borders(Borders::ALL);
-        let ascii_block = Block::default().title("ASCII Values").borders(Borders::ALL);
+        let offset_block = Block::default().borders(Borders::ALL);
+        let hex_block = Block::default().borders(Borders::ALL);
+        let ascii_block = Block::default().borders(Borders::ALL);
 
         let mut offset_data = Vec::new();
         let mut hex_data = Vec::new();
