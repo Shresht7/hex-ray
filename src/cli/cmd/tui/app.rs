@@ -120,10 +120,7 @@ impl App {
 
         for (i, row) in self.data.iter().enumerate() {
             // Offset column
-            offset_data.push(Line::from(Span::styled(
-                format!("{:08x}", row.offset),
-                Style::default().fg(Color::White),
-            )));
+            offset_data.push(row.format_offset());
 
             // Hex Values column
             let mut hex_spans = Vec::new();
