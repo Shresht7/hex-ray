@@ -48,7 +48,12 @@ impl App {
                 break;
             }
 
-            let row = super::row::Row::parse(&buffer, offset, self.cfg.group_size, bytes_read);
+            let row = super::row::Row::parse(
+                &buffer,
+                offset + self.total_bytes,
+                self.cfg.group_size,
+                bytes_read,
+            );
             self.data.push(row);
 
             self.total_bytes += bytes_read;
@@ -101,7 +106,7 @@ impl App {
     }
 
     fn increment(&mut self) {
-        if self.selected < self.total_bytes {
+        if self.selected < self.total_bytes - 1 {
             self.selected += 1;
         }
     }
@@ -124,7 +129,7 @@ impl Widget for &App {
             rows.push(Row::new(vec![
                 Cell::from(row.format_offset()),
                 Cell::from(row.format_hex_values(self.selected)),
-                Cell::from(row.format_ascii_representation()),
+                Cell::from(row.format_ascii_representation(self.selected)),
             ]));
         }
 
