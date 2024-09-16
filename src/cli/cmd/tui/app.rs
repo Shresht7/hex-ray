@@ -84,25 +84,30 @@ impl App {
         Ok(())
     }
 
+    // --
+    // UI
+    // --
+
     fn draw(&self, f: &mut Frame) {
-        // Create a layout with three columns and a minimum height of 10 lines
-        let layout = Layout::default()
+        // Create the base layout
+        let base_layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Length(self.data.len() as u16 + 2)].as_ref())
             .split(f.area());
 
         // Create a layout with three vertical sections
-        let chunks = Layout::default()
+        let columns = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(
                 [
+                    // TODO: Determine the lengths using the size parameters
                     Constraint::Length(12), // Offset
                     Constraint::Length(52), // Hex Values
                     Constraint::Length(20), // ASCII Values
                 ]
                 .as_ref(),
             )
-            .split(layout[0]);
+            .split(base_layout[0]);
 
         // Create a block with borders and title for each column
         let offset_block = Block::default().title("Offset").borders(Borders::ALL);
@@ -159,10 +164,14 @@ impl App {
             .block(ascii_block)
             .style(Style::default().fg(Color::White).bg(Color::Black));
 
-        f.render_widget(offset_paragraph, chunks[0]);
-        f.render_widget(hex_paragraph, chunks[1]);
-        f.render_widget(ascii_paragraph, chunks[2]);
+        f.render_widget(offset_paragraph, columns[0]);
+        f.render_widget(hex_paragraph, columns[1]);
+        f.render_widget(ascii_paragraph, columns[2]);
     }
+
+    // --------------
+    // EVENT HANDLERS
+    // --------------
 
     /// updates the application's state based on user input
     fn handle_events(&mut self) -> std::io::Result<()> {
@@ -181,8 +190,8 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Right => self.increment(),
-            KeyCode::Left => self.decrement(),
+            KeyCode::Right => self.move_selection_left(),
+            KeyCode::Left => self.move_selection_right(),
             _ => {}
         }
     }
@@ -191,22 +200,22 @@ impl App {
     // COMMAND HANDLERS
     // ----------------
 
-    /// Exits the application
-    fn exit(&mut self) {
-        self.exit = true;
-    }
-
     /// Select the next element
-    fn increment(&mut self) {
+    fn move_selection_left(&mut self) {
         if self.selected < self.total_bytes - 1 {
             self.selected += 1;
         }
     }
 
     /// Select the previous element
-    fn decrement(&mut self) {
+    fn move_selection_right(&mut self) {
         if self.selected > 0 {
             self.selected -= 1;
         }
+    }
+
+    /// Exits the application
+    fn exit(&mut self) {
+        self.exit = true;
     }
 }
