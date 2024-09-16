@@ -20,13 +20,6 @@ impl Row {
         }
     }
 
-    // pub fn to_string(&self) -> String {
-    // let offset = self.format_offset();
-    // let hex_values = self.format_hex_values();
-    // let ascii_values = self.format_ascii_representation();
-    // format!("│ {} │ {} │ {} │", offset, hex_values, ascii_values)
-    // }
-
     pub fn format_offset(&self) -> String {
         let res = Format::Octal.format(self.offset as u8);
         if res.len() > 8 {
@@ -50,7 +43,7 @@ impl Row {
                 s.push_str(" ");
             }
             let mut value = Format::Hex.format(*byte);
-            if j == selected {
+            if self.offset + j == selected {
                 value = format!("+{}", value)
             }
             s.push_str(&value); // Format each byte as a 2-wide hexadecimal value
@@ -71,7 +64,7 @@ impl Row {
     }
 
     /// Print the ASCII columns
-    pub fn format_ascii_representation(&self) -> String {
+    pub fn format_ascii_representation(&self, selected: usize) -> String {
         let mut s = String::new();
 
         // Print the ASCII representation
@@ -83,7 +76,10 @@ impl Row {
             // If there are still bytes to read, print the ASCII character...
             if k < self.bytes_read {
                 let c = if helpers::is_printable_ascii_character(&byte) {
-                    let char = (*byte as char).to_string();
+                    let mut char = (*byte as char).to_string();
+                    if self.offset + k == selected {
+                        char = format!("+{}", char)
+                    }
                     format!("{}", char)
                 } else {
                     format!("{}", "·") // Non-printable ASCII characters are replaced by a dot
