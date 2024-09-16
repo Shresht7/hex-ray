@@ -13,9 +13,14 @@ impl View {
 
         let (reader, offset) = helpers::get_reader_and_offset(self.filepath.as_ref(), self.offset)?;
 
+        let mut terminal = ratatui::init();
+        terminal.clear()?;
+
         let mut app = App::new(self);
         app.parse(reader, offset)?;
+        let app_result = app.run(&mut terminal);
+        ratatui::restore();
 
-        app.run()
+        app_result
     }
 }

@@ -1,5 +1,9 @@
 // Library
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use ratatui::layout::Alignment;
+use ratatui::widgets::block::Title;
+use ratatui::widgets::{Block, Paragraph, Widget};
+use ratatui::{DefaultTerminal, Frame};
 
 use super::row::Row;
 use super::View;
@@ -53,20 +57,20 @@ impl App {
         Ok(self)
     }
 
-    pub fn run(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn run(
+        &mut self,
+        terminal: &mut DefaultTerminal,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         // The main draw loop
         while !self.exit {
-            self.draw()?;
+            terminal.draw(|frame| self.draw(frame))?;
             self.handle_events()?;
         }
         Ok(())
     }
 
-    fn draw(&self) -> Result<(), Box<dyn std::error::Error>> {
-        self.data
-            .iter()
-            .for_each(|line| println!("{}", line.to_string()));
-        Ok(())
+    fn draw(&self, frame: &mut Frame) {
+        frame.render_widget(self, frame.area());
     }
 
     /// updates the application's state based on user input
@@ -92,5 +96,22 @@ impl App {
 
     fn exit(&mut self) {
         self.exit = true;
+    }
+}
+
+impl Widget for &App {
+    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer)
+    where
+        Self: Sized,
+    {
+        let title = Title::from("Hex-Ray");
+        let block = Block::bordered().title(title.alignment(Alignment::Center));
+
+        let mut s = String::new();
+        self.data
+            .iter()
+            .for_each(|line| s.push_str(&format!("{}\n", line.to_string())));
+
+        Paragraph::new(s).block(block).render(area, buf);
     }
 }
