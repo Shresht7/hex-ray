@@ -1,17 +1,5 @@
 // Library
-use crossterm::event::{Event, KeyEvent};
-use ratatui::{
-    crossterm::event::{self, KeyCode, KeyEventKind},
-    layout::Alignment,
-    style::Stylize,
-    symbols::border,
-    text::{Line, Text},
-    widgets::{
-        block::{Position, Title},
-        Block, Paragraph, Widget,
-    },
-    DefaultTerminal, Frame,
-};
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 
 use super::row::Row;
 use super::View;
@@ -61,20 +49,20 @@ impl App {
         Ok(self)
     }
 
-    pub fn run(
-        &mut self,
-        terminal: &mut DefaultTerminal,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn run(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         // The main draw loop
         while !self.exit {
-            terminal.draw(|frame| self.draw(frame))?;
+            self.draw()?;
             self.handle_events()?;
         }
         Ok(())
     }
 
-    fn draw(&self, frame: &mut Frame) {
-        frame.render_widget(self, frame.area())
+    fn draw(&self) -> Result<(), Box<dyn std::error::Error>> {
+        self.data
+            .iter()
+            .for_each(|line| println!("{}", line.to_string()));
+        Ok(())
     }
 
     /// updates the application's state based on user input
@@ -93,46 +81,12 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('a') => println!("Wow"),
             _ => {}
         }
     }
 
     fn exit(&mut self) {
         self.exit = true;
-    }
-}
-
-impl Widget for &App {
-    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer)
-    where
-        Self: Sized,
-    {
-        let title = Title::from("HEX-RAY".bold());
-        let instructions = Title::from(Line::from(vec![
-            " Decrement ".into(),
-            "<Left>".blue().bold(),
-            " Increment ".into(),
-            "<Right>".blue().bold(),
-            " Quit ".into(),
-            "<Q> ".blue().bold(),
-        ]));
-
-        let block = Block::bordered()
-            .title(title.alignment(Alignment::Center))
-            .title(
-                instructions
-                    .alignment(Alignment::Center)
-                    .position(Position::Bottom),
-            )
-            .border_set(border::THICK);
-
-        let lines: Vec<Line> = self
-            .data
-            .iter()
-            .map(|l| Line::from(l.to_string()))
-            .collect();
-        let counter_text = Text::from(lines);
-
-        Paragraph::new(counter_text).block(block).render(area, buf);
     }
 }

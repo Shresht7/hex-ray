@@ -147,7 +147,7 @@ impl View {
     }
 
     /// Prints a row in the hexdump table
-    fn print_line(&self, buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
+    pub fn print_line(&self, buffer: &[u8], bytes_read: usize, total_bytes_read: usize) {
         let offset = self.format_offset(total_bytes_read);
         let hex_values = self.format_hex_values(&buffer, bytes_read);
         let ascii_values = self.format_ascii_representation(&buffer, bytes_read);
