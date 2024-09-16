@@ -57,7 +57,7 @@ pub struct View {
 
 impl View {
     /// Perform initialization setup
-    fn init(&self) -> &Self {
+    pub fn init(&self) -> &Self {
         // Disable ANSI colors by setting the `NO_COLOR` env variable
         if self.no_color || self.simple {
             std::env::set_var("NO_COLOR", "true");
@@ -67,7 +67,6 @@ impl View {
 
     pub fn execute(self) -> Result<(), Box<dyn std::error::Error>> {
         self.init();
-
         let (reader, offset) = helpers::get_reader_and_offset(self.filepath.as_ref(), self.offset)?;
         Ok(self.dump(reader, offset)?)
     }
