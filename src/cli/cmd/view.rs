@@ -10,7 +10,7 @@ use clap::Parser;
 // VIEW COMMAND
 // ------------
 
-#[derive(Parser, Clone)]
+#[derive(Parser, Clone, Debug, Default)]
 #[command(version, about)]
 pub struct View {
     /// Path to the file to read (defaults to reading from `stdin` if empty)

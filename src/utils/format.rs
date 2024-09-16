@@ -3,8 +3,9 @@
 // -------
 
 /// Supported output formats
-#[derive(Clone)]
+#[derive(Clone, Debug, Default)]
 pub enum Format {
+    #[default]
     Hex,
     HexWithPrefix,
     UpperHex,
