@@ -1,7 +1,8 @@
 // Library
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use ratatui::layout::{Alignment, Constraint};
-use ratatui::style::{Modifier, Style};
+use ratatui::layout::{Alignment, Constraint, Direction, Layout};
+use ratatui::style::{Color, Modifier, Style};
+use ratatui::text::{Line, Span};
 use ratatui::widgets::block::Title;
 use ratatui::widgets::{Block, Borders, Cell, Paragraph, Row, Table, Widget};
 use ratatui::{DefaultTerminal, Frame};
@@ -75,8 +76,84 @@ impl App {
         Ok(())
     }
 
-    fn draw(&self, frame: &mut Frame) {
-        frame.render_widget(self, frame.area());
+    fn draw(&self, f: &mut Frame) {
+        // Create a layout with three columns and a minimum height of 10 lines
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Length(self.data.len() as u16 + 2)].as_ref())
+            .split(f.area());
+
+        // Create a layout with three vertical sections
+        let chunks = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(
+                [
+                    Constraint::Length(12), // Offset
+                    Constraint::Length(52), // Hex Values
+                    Constraint::Length(20), // ASCII Values
+                ]
+                .as_ref(),
+            )
+            .split(layout[0]);
+
+        // Create a block with borders and title for each column
+        let offset_block = Block::default().title("Offset").borders(Borders::ALL);
+        let hex_block = Block::default().title("Hex Values").borders(Borders::ALL);
+        let ascii_block = Block::default().title("ASCII Values").borders(Borders::ALL);
+
+        let mut offset_data = Vec::new();
+        let mut hex_data = Vec::new();
+        let mut ascii_data = Vec::new();
+
+        for (i, row) in self.data.iter().enumerate() {
+            // Offset column
+            offset_data.push(Line::from(Span::styled(
+                format!("{:08x}", row.offset),
+                Style::default().fg(Color::White),
+            )));
+
+            // Hex Values column
+            let mut hex_spans = Vec::new();
+            let mut ascii_spans = Vec::new();
+            for (j, byte) in row.data.iter().enumerate() {
+                let byte_str = format!("{:02x} ", byte);
+                let ascii_char = if byte.is_ascii_graphic() {
+                    *byte as char
+                } else {
+                    '.'
+                };
+
+                if i * self.cfg.size + j == self.selected {
+                    hex_spans.push(Span::styled(byte_str, Style::default().fg(Color::Yellow)));
+                    ascii_spans.push(Span::styled(
+                        format!("{}", ascii_char),
+                        Style::default().fg(Color::Yellow),
+                    ));
+                } else {
+                    hex_spans.push(Span::styled(byte_str, Style::default().fg(Color::White)));
+                    ascii_spans.push(Span::styled(
+                        format!("{}", ascii_char),
+                        Style::default().fg(Color::White),
+                    ));
+                }
+            }
+            hex_data.push(Line::from(hex_spans));
+            ascii_data.push(Line::from(ascii_spans));
+        }
+
+        let offset_paragraph = Paragraph::new(offset_data)
+            .block(offset_block)
+            .style(Style::default().fg(Color::White).bg(Color::Black));
+        let hex_paragraph = Paragraph::new(hex_data)
+            .block(hex_block)
+            .style(Style::default().fg(Color::White).bg(Color::Black));
+        let ascii_paragraph = Paragraph::new(ascii_data)
+            .block(ascii_block)
+            .style(Style::default().fg(Color::White).bg(Color::Black));
+
+        f.render_widget(offset_paragraph, chunks[0]);
+        f.render_widget(hex_paragraph, chunks[1]);
+        f.render_widget(ascii_paragraph, chunks[2]);
     }
 
     /// updates the application's state based on user input
@@ -115,44 +192,5 @@ impl App {
         if self.selected > 0 {
             self.selected -= 1;
         }
-    }
-}
-
-impl Widget for &App {
-    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer)
-    where
-        Self: Sized,
-    {
-        // Convert app data to table rows
-        let mut rows: Vec<Row> = Vec::new();
-        for (r, row) in self.data.iter().enumerate() {
-            rows.push(Row::new(vec![
-                Cell::from(row.format_offset()),
-                Cell::from(row.format_hex_values(self.selected)),
-                Cell::from(row.format_ascii_representation(self.selected)),
-            ]));
-        }
-
-        // Define column widths
-        let widths = vec![
-            Constraint::Length(20),
-            Constraint::Length(60),
-            Constraint::Length(30),
-        ];
-
-        // Create the table
-        let table = Table::new(rows, widths)
-            .header(
-                Row::new(vec![
-                    Cell::from("Offset"),
-                    Cell::from("Hex"),
-                    Cell::from("Ascii"),
-                ])
-                .style(Style::default().add_modifier(Modifier::BOLD)),
-            )
-            .block(Block::default().borders(Borders::ALL).title("Data Table"))
-            .column_spacing(1);
-
-        table.render(area, buf);
     }
 }
