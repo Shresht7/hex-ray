@@ -4,10 +4,10 @@ use crate::utils::helpers;
 
 #[derive(Debug)]
 pub struct Row {
-    data: Vec<u8>,
-    offset: usize,
-    group_size: usize,
-    bytes_read: usize,
+    pub data: Vec<u8>,
+    pub offset: usize,
+    pub group_size: usize,
+    pub bytes_read: usize,
 }
 
 impl Row {
@@ -20,14 +20,14 @@ impl Row {
         }
     }
 
-    pub fn to_string(&self) -> String {
-        let offset = self.format_offset();
-        let hex_values = self.format_hex_values();
-        let ascii_values = self.format_ascii_representation();
-        format!("│ {} │ {} │ {} │", offset, hex_values, ascii_values)
-    }
+    // pub fn to_string(&self) -> String {
+    // let offset = self.format_offset();
+    // let hex_values = self.format_hex_values();
+    // let ascii_values = self.format_ascii_representation();
+    // format!("│ {} │ {} │ {} │", offset, hex_values, ascii_values)
+    // }
 
-    fn format_offset(&self) -> String {
+    pub fn format_offset(&self) -> String {
         let res = Format::Octal.format(self.offset as u8);
         if res.len() > 8 {
             return format!("{:0>8}", res);
@@ -41,7 +41,7 @@ impl Row {
         format!("{}{}", padding, res)
     }
 
-    fn format_hex_values(&self) -> String {
+    pub fn format_hex_values(&self, selected: usize) -> String {
         let mut s = String::new();
         // Print the hex values
         for (j, byte) in self.data.iter().take(self.bytes_read).enumerate() {
@@ -49,7 +49,10 @@ impl Row {
             if j > 0 && j % self.group_size == 0 {
                 s.push_str(" ");
             }
-            let value = Format::Hex.format(*byte);
+            let mut value = Format::Hex.format(*byte);
+            if j == selected {
+                value = format!("+{}", value)
+            }
             s.push_str(&value); // Format each byte as a 2-wide hexadecimal value
             s.push_str(" ");
         }
@@ -68,7 +71,7 @@ impl Row {
     }
 
     /// Print the ASCII columns
-    fn format_ascii_representation(&self) -> String {
+    pub fn format_ascii_representation(&self) -> String {
         let mut s = String::new();
 
         // Print the ASCII representation
