@@ -1,17 +1,17 @@
 // Library
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use ratatui::layout::Alignment;
+use ratatui::layout::{Alignment, Constraint};
+use ratatui::style::{Modifier, Style};
 use ratatui::widgets::block::Title;
-use ratatui::widgets::{Block, Paragraph, Widget};
+use ratatui::widgets::{Block, Borders, Cell, Paragraph, Row, Table, Widget};
 use ratatui::{DefaultTerminal, Frame};
 
-use super::row::Row;
 use super::View;
 
 #[derive(Debug, Default)]
 pub struct App {
     cfg: View,
-    data: Vec<Row>,
+    data: Vec<super::row::Row>,
     total_bytes: usize,
     selected: usize,
     exit: bool,
@@ -48,7 +48,7 @@ impl App {
                 break;
             }
 
-            let row = Row::parse(&buffer, offset, self.cfg.group_size, bytes_read);
+            let row = super::row::Row::parse(&buffer, offset, self.cfg.group_size, bytes_read);
             self.data.push(row);
 
             self.total_bytes += bytes_read;
@@ -118,14 +118,36 @@ impl Widget for &App {
     where
         Self: Sized,
     {
-        let title = Title::from("Hex-Ray");
-        let block = Block::bordered().title(title.alignment(Alignment::Center));
+        // Convert app data to table rows
+        let mut rows: Vec<Row> = Vec::new();
+        for (r, row) in self.data.iter().enumerate() {
+            rows.push(Row::new(vec![
+                Cell::from(row.format_offset()),
+                Cell::from(row.format_hex_values(self.selected)),
+                Cell::from(row.format_ascii_representation()),
+            ]));
+        }
 
-        let mut s = String::from(self.selected.to_string());
-        self.data
-            .iter()
-            .for_each(|line| s.push_str(&format!("{}\n", line.to_string())));
+        // Define column widths
+        let widths = vec![
+            Constraint::Length(20),
+            Constraint::Length(60),
+            Constraint::Length(30),
+        ];
 
-        Paragraph::new(s).block(block).render(area, buf);
+        // Create the table
+        let table = Table::new(rows, widths)
+            .header(
+                Row::new(vec![
+                    Cell::from("Offset"),
+                    Cell::from("Hex"),
+                    Cell::from("Ascii"),
+                ])
+                .style(Style::default().add_modifier(Modifier::BOLD)),
+            )
+            .block(Block::default().borders(Borders::ALL).title("Data Table"))
+            .column_spacing(1);
+
+        table.render(area, buf);
     }
 }
