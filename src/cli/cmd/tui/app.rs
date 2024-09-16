@@ -13,6 +13,7 @@ pub struct App {
     cfg: View,
     data: Vec<Row>,
     total_bytes: usize,
+    selected: usize,
     exit: bool,
 }
 
@@ -89,13 +90,26 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Char('a') => println!("Wow"),
+            KeyCode::Right => self.increment(),
+            KeyCode::Left => self.decrement(),
             _ => {}
         }
     }
 
     fn exit(&mut self) {
         self.exit = true;
+    }
+
+    fn increment(&mut self) {
+        if self.selected < self.total_bytes {
+            self.selected += 1;
+        }
+    }
+
+    fn decrement(&mut self) {
+        if self.selected > 0 {
+            self.selected -= 1;
+        }
     }
 }
 
@@ -107,7 +121,7 @@ impl Widget for &App {
         let title = Title::from("Hex-Ray");
         let block = Block::bordered().title(title.alignment(Alignment::Center));
 
-        let mut s = String::new();
+        let mut s = String::from(self.selected.to_string());
         self.data
             .iter()
             .for_each(|line| s.push_str(&format!("{}\n", line.to_string())));
