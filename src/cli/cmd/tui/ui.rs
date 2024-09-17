@@ -1,9 +1,10 @@
 use ratatui::layout::{Alignment, Constraint, Direction, Layout};
 use ratatui::style::{Color, Style};
 use ratatui::text::{Line, Span, Text};
-use ratatui::widgets::{Block, Borders, Paragraph, Wrap};
+use ratatui::widgets::{Block, Borders, Padding, Paragraph, Wrap};
 use ratatui::Frame;
 
+use crate::utils::format::Format;
 use crate::utils::helpers;
 
 use super::App;
@@ -39,6 +40,7 @@ impl App {
                     Constraint::Length(offset_len),       // Offset
                     Constraint::Length(hex_len as u16),   // Hex Values
                     Constraint::Length(ascii_len as u16), // ASCII Values
+                    Constraint::Fill(1),                  // Selection Block
                 ]
                 .as_ref(),
             )
@@ -48,10 +50,12 @@ impl App {
         let offset_block = Block::default().borders(Borders::ALL);
         let hex_block = Block::default().borders(Borders::ALL);
         let ascii_block = Block::default().borders(Borders::ALL);
+        let selection_block = Block::default().padding(Padding::symmetric(4, 1));
 
         let mut offset_data = Vec::new();
         let mut hex_data = Vec::new();
         let mut ascii_data = Vec::new();
+        let mut selection_data = Vec::new();
 
         let selected_styles = Style::default().bg(Color::Yellow);
         let regular_styles = Style::default().fg(Color::White);
@@ -77,10 +81,39 @@ impl App {
                     String::from("·")
                 };
 
-                let style = if i * self.cfg.size + j == self.selected {
-                    selected_styles
+                let style: Style;
+                if i * self.cfg.size + j == self.selected {
+                    selection_data = vec![
+                        Line::from(vec![
+                            Span::from("Index: "),
+                            Span::from(self.selected.to_string()),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nSelected: "),
+                            Span::from(byte_str.clone()),
+                        ]),
+                        Line::from("\n"),
+                        Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
+                        Line::from(vec![
+                            Span::from("\nDecimal: "),
+                            Span::from(Format::Decimal.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nBinary: "),
+                            Span::from(Format::Binary.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nOctal: "),
+                            Span::from(Format::Octal.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nHexadecimal: "),
+                            Span::from(Format::Hex.format(*byte)),
+                        ]),
+                    ];
+                    style = selected_styles
                 } else {
-                    regular_styles
+                    style = regular_styles
                 };
                 hex_spans.push(Span::styled(byte_str, style));
                 hex_spans.push(Span::from(" "));
@@ -103,10 +136,12 @@ impl App {
             .block(ascii_block)
             .alignment(Alignment::Center)
             .style(Style::default().fg(Color::White));
+        let selection_paragraph = Paragraph::new(selection_data).block(selection_block);
 
         f.render_widget(offset_paragraph, columns[0]);
         f.render_widget(hex_paragraph, columns[1]);
         f.render_widget(ascii_paragraph, columns[2]);
+        f.render_widget(selection_paragraph, columns[3]);
 
         // Help text styled and combined into a single line
         let help_text = vec![
