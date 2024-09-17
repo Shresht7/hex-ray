@@ -148,17 +148,11 @@ impl App {
 
         // Help text styled and combined into a single line
         let help_text = vec![
-            Span::styled("q ", Style::default().fg(Color::Green)),
+            Span::styled("q  ", Style::default().fg(Color::Green)),
             Span::styled("Quit", Style::default().fg(Color::DarkGray)),
-            Span::from("  ·  "),
-            Span::styled("↑ ↓ ", Style::default().fg(Color::Green)),
+            Span::styled("  •  ", Style::default().fg(Color::DarkGray)),
+            Span::styled("← ↑ ↓ →  ", Style::default().fg(Color::Green)),
             Span::styled("Move selection", Style::default().fg(Color::DarkGray)),
-            Span::from("  ·  "),
-            Span::styled("← → ", Style::default().fg(Color::Green)),
-            Span::styled(
-                "Move selection within row",
-                Style::default().fg(Color::DarkGray),
-            ),
         ];
 
         let help_line = Line::from(help_text);
