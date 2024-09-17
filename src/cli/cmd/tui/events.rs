@@ -24,6 +24,8 @@ impl App {
             KeyCode::Right => self.move_selection_left(),
             KeyCode::Down => self.move_selection_down(),
             KeyCode::Left => self.move_selection_right(),
+            KeyCode::PageUp => self.scroll_up(),
+            KeyCode::PageDown => self.scroll_down(),
             _ => {}
         }
     }
@@ -69,6 +71,29 @@ impl App {
             if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
                 self.scroll_offset += 1;
             }
+        }
+    }
+
+    /// Scroll up a page
+    fn scroll_up(&mut self) {
+        if self.selected > self.cfg.size * self.rows_per_page {
+            self.selected -= self.cfg.size * self.rows_per_page;
+        } else {
+            self.selected = 0;
+        }
+        // Make sure we don't go negative here.
+        self.scroll_offset = self.scroll_offset.saturating_sub(self.rows_per_page);
+    }
+
+    /// Scroll down a page
+    fn scroll_down(&mut self) {
+        if self.selected < self.total_bytes - (self.cfg.size * self.rows_per_page) {
+            self.selected += self.cfg.size * self.rows_per_page;
+        } else {
+            self.selected = self.total_bytes;
+        }
+        if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+            self.scroll_offset += self.rows_per_page;
         }
     }
 
