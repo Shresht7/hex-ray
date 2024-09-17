@@ -1,5 +1,5 @@
 use ratatui::layout::{Alignment, Constraint, Direction, Layout};
-use ratatui::style::{Color, Style};
+use ratatui::style::{Color, Style, Stylize};
 use ratatui::text::{Line, Span, Text};
 use ratatui::widgets::{Block, Borders, Padding, Paragraph, Wrap};
 use ratatui::Frame;
@@ -57,7 +57,10 @@ impl App {
         let mut ascii_data = Vec::new();
         let mut selection_data = Vec::new();
 
-        let selected_styles = Style::default().bg(Color::Yellow);
+        let selected_styles = Style::default()
+            .bg(Color::Rgb(255, 146, 92))
+            .fg(Color::Black)
+            .bold();
         let regular_styles = Style::default().fg(Color::White);
 
         for (i, row) in self.data.iter().enumerate() {
