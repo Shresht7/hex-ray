@@ -25,6 +25,13 @@ impl App {
             .spacing(1)
             .split(f.area());
 
+        let header = Paragraph::new("·• Hex·Ray •·")
+            .alignment(Alignment::Center)
+            .bold()
+            .white();
+
+        f.render_widget(header, base_layout[0]);
+
         // Calculate column widths based on format and configuration
         let offset_len = 8 + 4;
         let hex_len = ((self.cfg.format.size() + 1) * self.cfg.size)
