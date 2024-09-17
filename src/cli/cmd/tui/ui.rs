@@ -76,11 +76,12 @@ impl App {
         // Iterate over the data slice ...
         for (i, row) in self.data[start..end].iter().enumerate() {
             let row_index = start + i; // The absolute row index
+            let is_selected_row = self.selected / self.cfg.size == row_index;
 
             // Offset column
             let offset_str = row.format_offset();
-            let offset_spans = if self.selected / self.cfg.size == row_index {
-                Span::from(offset_str.white())
+            let offset_spans = if is_selected_row {
+                Span::from(offset_str.bold().white())
             } else {
                 Span::from(offset_str)
             };
