@@ -87,9 +87,9 @@ impl App {
 
                 let byte_str = self.cfg.format.format(*byte);
                 let ascii_str = if helpers::is_printable_ascii_character(byte) {
-                    (*byte as char).to_string()
+                    Span::from((*byte as char).to_string())
                 } else {
-                    String::from("·")
+                    Span::from("·".dark_gray())
                 };
 
                 let style: Style;
@@ -122,13 +122,14 @@ impl App {
                             Span::from(Format::Hex.format(*byte)),
                         ]),
                     ];
-                    style = selected_styles
+                    style = selected_styles;
+                    ascii_spans.push(ascii_str.style(selected_styles));
                 } else {
-                    style = regular_styles
+                    style = regular_styles;
+                    ascii_spans.push(ascii_str);
                 };
                 hex_spans.push(Span::styled(byte_str, style));
                 hex_spans.push(Span::from(" "));
-                ascii_spans.push(Span::styled(ascii_str, style));
             }
 
             hex_data.push(Line::from(hex_spans));
