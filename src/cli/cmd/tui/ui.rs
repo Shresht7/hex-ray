@@ -128,10 +128,12 @@ impl App {
             .alignment(Alignment::Center);
         let hex_paragraph = Paragraph::new(hex_data)
             .block(hex_block)
-            .alignment(Alignment::Center);
+            .alignment(Alignment::Center)
+            .style(Color::White);
         let ascii_paragraph = Paragraph::new(ascii_data)
             .block(ascii_block)
-            .alignment(Alignment::Center);
+            .alignment(Alignment::Center)
+            .style(Color::White);
         let selection_paragraph = Paragraph::new(selection_data).block(selection_block);
 
         f.render_widget(offset_paragraph, columns[0]);
