@@ -17,10 +17,11 @@ pub struct App {
 
 impl App {
     /// Instantiate a new instance of the application from the configuration parameters
-    pub fn new(cfg: View) -> Self {
+    pub fn new(cfg: View, size: u16) -> Self {
+        let rows_per_page = std::cmp::max(10, size as usize - 6);
         Self {
             cfg,
-            rows_per_page: 10,
+            rows_per_page,
             ..Default::default()
         }
     }
