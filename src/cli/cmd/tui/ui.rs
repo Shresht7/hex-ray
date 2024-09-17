@@ -25,12 +25,7 @@ impl App {
             .spacing(1)
             .split(f.area());
 
-        let header = Paragraph::new("·• Hex·Ray •·")
-            .alignment(Alignment::Center)
-            .bold()
-            .white();
-
-        f.render_widget(header, base_layout[0]);
+        f.render_widget(self.header(), base_layout[0]);
 
         // Calculate column widths based on format and configuration
         let offset_len = 8 + 4;
@@ -165,6 +160,17 @@ impl App {
         f.render_widget(ascii_paragraph, columns[2]);
         f.render_widget(selection_paragraph, columns[3]);
 
+        f.render_widget(self.help(), base_layout[2]);
+    }
+
+    fn header(&self) -> Paragraph<'static> {
+        Paragraph::new("·• Hex·Ray •·")
+            .alignment(Alignment::Center)
+            .bold()
+            .white()
+    }
+
+    fn help(&self) -> Paragraph<'static> {
         // Help text styled and combined into a single line
         let help_text = vec![
             Span::styled("q / esc  ", Style::default().fg(Color::Green)),
@@ -173,13 +179,10 @@ impl App {
             Span::styled("← ↑ ↓ →  ", Style::default().fg(Color::Green)),
             Span::styled("Move selection", Style::default().fg(Color::DarkGray)),
         ];
-
         let help_line = Line::from(help_text);
 
-        let help_paragraph = Paragraph::new(help_line)
+        Paragraph::new(help_line)
             .alignment(Alignment::Center)
-            .wrap(ratatui::widgets::Wrap { trim: false });
-
-        f.render_widget(help_paragraph, base_layout[2]);
+            .wrap(ratatui::widgets::Wrap { trim: false })
     }
 }
