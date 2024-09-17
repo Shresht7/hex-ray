@@ -34,7 +34,7 @@ impl App {
 
     // Select the element in the row above
     fn move_selection_up(&mut self) {
-        if self.selected > self.cfg.size {
+        if self.selected >= self.cfg.size {
             self.selected -= self.cfg.size;
         }
     }
