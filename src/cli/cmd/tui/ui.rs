@@ -157,7 +157,7 @@ impl App {
 
         // Help text styled and combined into a single line
         let help_text = vec![
-            Span::styled("q  ", Style::default().fg(Color::Green)),
+            Span::styled("q / esc  ", Style::default().fg(Color::Green)),
             Span::styled("Quit", Style::default().fg(Color::DarkGray)),
             Span::styled("  •  ", Style::default().fg(Color::DarkGray)),
             Span::styled("← ↑ ↓ →  ", Style::default().fg(Color::Green)),

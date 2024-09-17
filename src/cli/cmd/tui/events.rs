@@ -19,7 +19,7 @@ impl App {
     /// matches the given key-event and calls the corresponding handler
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
-            KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('q') | KeyCode::Esc => self.exit(),
             KeyCode::Up => self.move_selection_up(),
             KeyCode::Right => self.move_selection_left(),
             KeyCode::Down => self.move_selection_down(),
