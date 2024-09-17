@@ -34,7 +34,7 @@ impl Row {
         for _ in 0..(8 - res.len()) {
             padding_str.push_str(&"·");
         }
-        let padding = Span::styled(padding_str, Style::default().fg(Color::Gray));
+        let padding = Span::styled(padding_str, Style::default().fg(Color::DarkGray));
 
         Line::from(vec![padding, Span::from(res)])
     }
