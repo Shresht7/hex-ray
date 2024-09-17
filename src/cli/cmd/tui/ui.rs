@@ -1,7 +1,7 @@
 use ratatui::layout::{Alignment, Constraint, Direction, Layout};
 use ratatui::style::{Color, Style};
-use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Paragraph};
+use ratatui::text::{Line, Span, Text};
+use ratatui::widgets::{Block, Borders, Paragraph, Wrap};
 use ratatui::Frame;
 
 use crate::utils::helpers;
@@ -13,13 +13,22 @@ impl App {
         // Create the base layout
         let base_layout = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([Constraint::Length(self.data.len() as u16 + 2)].as_ref())
+            .constraints(
+                [
+                    Constraint::Length(1),
+                    Constraint::Length(self.data.len() as u16 + 2),
+                    Constraint::Length(1),
+                ]
+                .as_ref(),
+            )
+            .spacing(1)
             .split(f.area());
 
+        // Calculate column widths based on format and configuration
         let offset_len = 8 + 4;
         let hex_len = ((self.cfg.format.size() + 1) * self.cfg.size)
             + (self.cfg.size / self.cfg.group_size)
-            + 2;
+            + 4;
         let ascii_len = (self.cfg.size + 1) + (self.cfg.size / self.cfg.group_size) + 2;
 
         // Create a layout with three vertical sections
@@ -33,7 +42,7 @@ impl App {
                 ]
                 .as_ref(),
             )
-            .split(base_layout[0]);
+            .split(base_layout[1]);
 
         // Create a block with borders and title for each column
         let offset_block = Block::default().borders(Borders::ALL);
@@ -98,5 +107,28 @@ impl App {
         f.render_widget(offset_paragraph, columns[0]);
         f.render_widget(hex_paragraph, columns[1]);
         f.render_widget(ascii_paragraph, columns[2]);
+
+        // Help text styled and combined into a single line
+        let help_text = vec![
+            Span::styled("q ", Style::default().fg(Color::Green)),
+            Span::styled("Quit", Style::default().fg(Color::DarkGray)),
+            Span::from("  ·  "),
+            Span::styled("↑ ↓ ", Style::default().fg(Color::Green)),
+            Span::styled("Move selection", Style::default().fg(Color::DarkGray)),
+            Span::from("  ·  "),
+            Span::styled("← → ", Style::default().fg(Color::Green)),
+            Span::styled(
+                "Move selection within row",
+                Style::default().fg(Color::DarkGray),
+            ),
+        ];
+
+        let help_line = Line::from(help_text);
+
+        let help_paragraph = Paragraph::new(help_line)
+            .alignment(Alignment::Center)
+            .wrap(ratatui::widgets::Wrap { trim: false });
+
+        f.render_widget(help_paragraph, base_layout[2]);
     }
 }
