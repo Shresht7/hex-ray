@@ -1,7 +1,6 @@
 use ratatui::style::{Color, Style};
 use ratatui::text::{Line, Span};
 
-// Library
 use crate::utils::format::Format;
 use crate::utils::helpers;
 
