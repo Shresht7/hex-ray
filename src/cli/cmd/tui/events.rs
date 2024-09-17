@@ -20,9 +20,9 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Up => self.move_selection_up(),
-            KeyCode::Right => self.move_selection_left(),
+            KeyCode::Right => self.move_selection_right(),
             KeyCode::Down => self.move_selection_down(),
-            KeyCode::Left => self.move_selection_right(),
+            KeyCode::Left => self.move_selection_left(),
             KeyCode::PageUp => self.scroll_up(),
             KeyCode::PageDown => self.scroll_down(),
             KeyCode::Esc | KeyCode::Char('q') => self.exit(),
@@ -47,10 +47,10 @@ impl App {
     // TODO: Swap the function names (right / left)
 
     /// Select the previous element
-    fn move_selection_right(&mut self) {
+    fn move_selection_left(&mut self) {
         // If this is not the first element ...
         if self.selected > 0 {
-            self.selected = self.selected.saturating_sub(1); // ...Move to the right by one
+            self.selected = self.selected.saturating_sub(1); // ...Move to the left by one
             self.adjust_scroll_view();
         }
     }
@@ -65,10 +65,10 @@ impl App {
     }
 
     /// Select the next element
-    fn move_selection_left(&mut self) {
+    fn move_selection_right(&mut self) {
         // If this is not the last element ...
         if self.selected <= self.total_bytes {
-            self.selected += 1; // ... Move it to the left by one
+            self.selected += 1; // ... Move it to the right by one
             self.adjust_scroll_view();
         }
     }
