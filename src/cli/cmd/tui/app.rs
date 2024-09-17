@@ -1,4 +1,3 @@
-// Library
 use ratatui::DefaultTerminal;
 
 use super::row::Row;
@@ -8,12 +7,12 @@ use super::View;
 #[derive(Debug, Default)]
 pub struct App {
     pub cfg: View,            // Configuration parameters
-    pub data: Vec<Row>,       // The 2-D vector of data
+    pub data: Vec<Row>,       // The 2D vector of data
     pub total_bytes: usize,   // The total count of bytes
     pub selected: usize,      // The index of the selected byte
+    pub scroll_offset: usize, // The scroll position of the first row
+    pub rows_per_page: usize, // Number of rows to show per page
     pub exit: bool,           // Should exit the application
-    pub scroll_offset: usize, // The scroll position row
-    pub rows_per_page: usize, // Number of rows per page
 }
 
 impl App {
