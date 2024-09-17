@@ -7,13 +7,15 @@ pub struct Row {
 }
 
 impl Row {
-    pub fn parse(data: &[u8], offset: usize) -> Self {
+    /// Instantiate a new Row
+    pub fn new(data: &[u8], offset: usize) -> Self {
         Self {
             data: data.to_vec(),
             offset,
         }
     }
 
+    /// Return a formatted offset string
     pub fn format_offset(&self) -> String {
         let res = Format::Octal.format(self.offset as u8);
         if res.len() > 8 {
