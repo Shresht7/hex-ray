@@ -7,11 +7,13 @@ use super::View;
 /// The main application state
 #[derive(Debug, Default)]
 pub struct App {
-    pub cfg: View,          // Configuration parameters
-    pub data: Vec<Row>,     // The 2-D vector of data
-    pub total_bytes: usize, // The total count of bytes
-    pub selected: usize,    // The index of the selected byte
-    pub exit: bool,         // Should exit the application
+    pub cfg: View,            // Configuration parameters
+    pub data: Vec<Row>,       // The 2-D vector of data
+    pub total_bytes: usize,   // The total count of bytes
+    pub selected: usize,      // The index of the selected byte
+    pub exit: bool,           // Should exit the application
+    pub scroll_offset: usize, // The scroll position row
+    pub rows_per_page: usize, // Number of rows per page
 }
 
 impl App {
@@ -19,6 +21,7 @@ impl App {
     pub fn new(cfg: View) -> Self {
         Self {
             cfg,
+            rows_per_page: 10,
             ..Default::default()
         }
     }
