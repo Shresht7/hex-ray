@@ -97,29 +97,32 @@ impl App {
                     selection_data = vec![
                         Line::from(vec![
                             Span::from("Index: "),
-                            Span::from(self.selected.to_string()),
+                            Span::from(self.selected.to_string().white()),
                         ]),
                         Line::from(vec![
-                            Span::from("\nSelected: "),
-                            Span::from(byte_str.clone()),
+                            Span::from("\nSelected:    "),
+                            Span::from(byte_str.clone().white()),
                         ]),
                         Line::from("\n"),
-                        Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
                         Line::from(vec![
-                            Span::from("\nDecimal: "),
-                            Span::from(Format::Decimal.format(*byte)),
+                            Span::from("\nASCII:       "),
+                            Span::from(ascii_str.clone()).white(),
                         ]),
                         Line::from(vec![
-                            Span::from("\nBinary: "),
-                            Span::from(Format::Binary.format(*byte)),
+                            Span::from("\nDecimal:     "),
+                            Span::from(Format::Decimal.format(*byte).white()),
                         ]),
                         Line::from(vec![
-                            Span::from("\nOctal: "),
-                            Span::from(Format::Octal.format(*byte)),
+                            Span::from("\nBinary:      "),
+                            Span::from(Format::Binary.format(*byte).white()),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nOctal:       "),
+                            Span::from(Format::Octal.format(*byte).white()),
                         ]),
                         Line::from(vec![
                             Span::from("\nHexadecimal: "),
-                            Span::from(Format::Hex.format(*byte)),
+                            Span::from(Format::Hex.format(*byte).white()),
                         ]),
                     ];
                     style = selected_styles;
