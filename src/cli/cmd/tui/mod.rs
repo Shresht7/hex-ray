@@ -18,7 +18,9 @@ impl View {
         let mut terminal = ratatui::init();
         terminal.clear()?;
 
-        let mut app = App::new(self);
+        let size = terminal.size()?;
+
+        let mut app = App::new(self, size.height);
         app.parse(reader, offset)?;
         let app_result = app.run(&mut terminal);
         ratatui::restore();
