@@ -36,6 +36,9 @@ impl App {
     fn move_selection_up(&mut self) {
         if self.selected >= self.cfg.size {
             self.selected -= self.cfg.size;
+            if self.selected < self.cfg.size * self.scroll_offset {
+                self.scroll_offset -= 1;
+            }
         }
     }
 
@@ -43,20 +46,29 @@ impl App {
     fn move_selection_right(&mut self) {
         if self.selected > 0 {
             self.selected -= 1;
+            if self.selected < self.cfg.size * self.scroll_offset {
+                self.scroll_offset -= 1;
+            }
         }
     }
 
     // Select the element in the row above
     fn move_selection_down(&mut self) {
-        if self.selected + self.cfg.size < self.total_bytes {
+        if self.selected + self.cfg.size <= self.total_bytes {
             self.selected += self.cfg.size;
+            if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+                self.scroll_offset += 1;
+            }
         }
     }
 
     /// Select the next element
     fn move_selection_left(&mut self) {
-        if self.selected < self.total_bytes - 1 {
+        if self.selected <= self.total_bytes {
             self.selected += 1;
+            if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+                self.scroll_offset += 1;
+            }
         }
     }
 

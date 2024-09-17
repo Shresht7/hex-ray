@@ -17,7 +17,7 @@ impl App {
             .constraints(
                 [
                     Constraint::Length(1),
-                    Constraint::Length(self.data.len() as u16 + 2),
+                    Constraint::Length(self.rows_per_page as u16 + 2),
                     Constraint::Length(1),
                 ]
                 .as_ref(),
@@ -63,7 +63,15 @@ impl App {
             .bold();
         let regular_styles = Style::default().fg(Color::White);
 
-        for (i, row) in self.data.iter().enumerate() {
+        let start = self.scroll_offset;
+        let end = std::cmp::min(
+            self.scroll_offset + self.rows_per_page * self.cfg.size,
+            self.data.len(),
+        );
+
+        for (i, row) in self.data[start..end].iter().enumerate() {
+            let row_index = start + i;
+
             // Offset column
             offset_data.push(row.format_offset());
 
@@ -84,36 +92,37 @@ impl App {
                     String::from("·")
                 };
 
+                selection_data = vec![
+                    Line::from(vec![
+                        Span::from("Index: "),
+                        Span::from(self.selected.to_string()),
+                    ]),
+                    Line::from(vec![
+                        Span::from("\nSelected: "),
+                        Span::from(byte_str.clone()),
+                    ]),
+                    Line::from("\n"),
+                    Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
+                    Line::from(vec![
+                        Span::from("\nDecimal: "),
+                        Span::from(Format::Decimal.format(*byte)),
+                    ]),
+                    Line::from(vec![
+                        Span::from("\nBinary: "),
+                        Span::from(Format::Binary.format(*byte)),
+                    ]),
+                    Line::from(vec![
+                        Span::from("\nOctal: "),
+                        Span::from(Format::Octal.format(*byte)),
+                    ]),
+                    Line::from(vec![
+                        Span::from("\nHexadecimal: "),
+                        Span::from(Format::Hex.format(*byte)),
+                    ]),
+                ];
+
                 let style: Style;
-                if i * self.cfg.size + j == self.selected {
-                    selection_data = vec![
-                        Line::from(vec![
-                            Span::from("Index: "),
-                            Span::from(self.selected.to_string()),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nSelected: "),
-                            Span::from(byte_str.clone()),
-                        ]),
-                        Line::from("\n"),
-                        Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
-                        Line::from(vec![
-                            Span::from("\nDecimal: "),
-                            Span::from(Format::Decimal.format(*byte)),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nBinary: "),
-                            Span::from(Format::Binary.format(*byte)),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nOctal: "),
-                            Span::from(Format::Octal.format(*byte)),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nHexadecimal: "),
-                            Span::from(Format::Hex.format(*byte)),
-                        ]),
-                    ];
+                if row_index * self.cfg.size + j == self.selected {
                     style = selected_styles
                 } else {
                     style = regular_styles
