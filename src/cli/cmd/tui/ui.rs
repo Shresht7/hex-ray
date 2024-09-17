@@ -92,37 +92,36 @@ impl App {
                     String::from("·")
                 };
 
-                selection_data = vec![
-                    Line::from(vec![
-                        Span::from("Index: "),
-                        Span::from(self.selected.to_string()),
-                    ]),
-                    Line::from(vec![
-                        Span::from("\nSelected: "),
-                        Span::from(byte_str.clone()),
-                    ]),
-                    Line::from("\n"),
-                    Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
-                    Line::from(vec![
-                        Span::from("\nDecimal: "),
-                        Span::from(Format::Decimal.format(*byte)),
-                    ]),
-                    Line::from(vec![
-                        Span::from("\nBinary: "),
-                        Span::from(Format::Binary.format(*byte)),
-                    ]),
-                    Line::from(vec![
-                        Span::from("\nOctal: "),
-                        Span::from(Format::Octal.format(*byte)),
-                    ]),
-                    Line::from(vec![
-                        Span::from("\nHexadecimal: "),
-                        Span::from(Format::Hex.format(*byte)),
-                    ]),
-                ];
-
                 let style: Style;
                 if row_index * self.cfg.size + j == self.selected {
+                    selection_data = vec![
+                        Line::from(vec![
+                            Span::from("Index: "),
+                            Span::from(self.selected.to_string()),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nSelected: "),
+                            Span::from(byte_str.clone()),
+                        ]),
+                        Line::from("\n"),
+                        Line::from(vec![Span::from("\nASCII: "), Span::from(ascii_str.clone())]),
+                        Line::from(vec![
+                            Span::from("\nDecimal: "),
+                            Span::from(Format::Decimal.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nBinary: "),
+                            Span::from(Format::Binary.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nOctal: "),
+                            Span::from(Format::Octal.format(*byte)),
+                        ]),
+                        Line::from(vec![
+                            Span::from("\nHexadecimal: "),
+                            Span::from(Format::Hex.format(*byte)),
+                        ]),
+                    ];
                     style = selected_styles
                 } else {
                     style = regular_styles
