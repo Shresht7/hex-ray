@@ -53,7 +53,7 @@ impl App {
             }
 
             // Add the row data to the vector
-            let row = Row::parse(&buffer, offset + self.total_bytes);
+            let row = Row::new(&buffer, offset + self.total_bytes);
             self.data.push(row);
 
             // Update the total bytes and the number of bytes remaining
