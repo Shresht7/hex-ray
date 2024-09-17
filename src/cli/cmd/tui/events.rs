@@ -36,64 +36,83 @@ impl App {
 
     // Select the element in the row above
     fn move_selection_up(&mut self) {
-        if self.selected >= self.cfg.size {
-            self.selected -= self.cfg.size;
-            if self.selected < self.cfg.size * self.scroll_offset {
-                self.scroll_offset -= 1;
-            }
+        // If the selection is beyond the first row ...
+        if self.selected >= self.cfg.size * 1 {
+            // ...Subtract the size of a row to move the selection up by 1 row
+            self.selected = self.selected.saturating_sub(self.cfg.size);
+            self.adjust_scroll_view();
         }
     }
 
+    // TODO: Swap the function names (right / left)
+
     /// Select the previous element
     fn move_selection_right(&mut self) {
+        // If this is not the first element ...
         if self.selected > 0 {
-            self.selected -= 1;
-            if self.selected < self.cfg.size * self.scroll_offset {
-                self.scroll_offset -= 1;
-            }
+            self.selected = self.selected.saturating_sub(1); // ...Move to the right by one
+            self.adjust_scroll_view();
         }
     }
 
     // Select the element in the row above
     fn move_selection_down(&mut self) {
-        if self.selected + self.cfg.size <= self.total_bytes {
-            self.selected += self.cfg.size;
-            if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
-                self.scroll_offset += 1;
-            }
+        // If the selection is not in the last row ...
+        if self.selected + self.cfg.size <= self.total_bytes + 1 {
+            self.selected += self.cfg.size * 1; // Move it down by one row
+            self.adjust_scroll_view();
         }
     }
 
     /// Select the next element
     fn move_selection_left(&mut self) {
+        // If this is not the last element ...
         if self.selected <= self.total_bytes {
-            self.selected += 1;
-            if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
-                self.scroll_offset += 1;
-            }
+            self.selected += 1; // ... Move it to the left by one
+            self.adjust_scroll_view();
         }
     }
 
     /// Scroll up a page
     fn scroll_up(&mut self) {
+        // If the selection is beyond the first page ...
         if self.selected > self.cfg.size * self.rows_per_page {
-            self.selected -= self.cfg.size * self.rows_per_page;
+            // ... Go up one page
+            self.selected = self
+                .selected
+                .saturating_sub(self.cfg.size * self.rows_per_page);
         } else {
+            // Otherwise, just set the selection to the first element
             self.selected = 0;
         }
-        // Make sure we don't go negative here.
+        // Move the scroll view up by one page
         self.scroll_offset = self.scroll_offset.saturating_sub(self.rows_per_page);
     }
 
     /// Scroll down a page
     fn scroll_down(&mut self) {
-        if self.selected < self.total_bytes - (self.cfg.size * self.rows_per_page) {
-            self.selected += self.cfg.size * self.rows_per_page;
+        // If the selected element is in the last page ...
+        if self.selected >= self.total_bytes - (self.cfg.size * self.rows_per_page) {
+            // ... set it to be the last element
+            self.selected = self.total_bytes + 1;
         } else {
-            self.selected = self.total_bytes;
+            // Otherwise, go down one page
+            self.selected += self.cfg.size * self.rows_per_page;
         }
-        if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+        // If the selection goes beyond the scroll view
+        if self.selected > self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+            // Scroll down one page
             self.scroll_offset += self.rows_per_page;
+        }
+    }
+
+    fn adjust_scroll_view(&mut self) {
+        // Now, if the selection falls above the first row in the view ...
+        if self.selected < self.cfg.size * self.scroll_offset {
+            self.scroll_offset = self.scroll_offset.saturating_sub(1); // Scroll up by one row
+        } else if self.selected >= self.cfg.size * (self.rows_per_page + self.scroll_offset) {
+            // Otherwise if the selection goes beyond the last row in the view, scroll down by one row
+            self.scroll_offset += 1;
         }
     }
 
