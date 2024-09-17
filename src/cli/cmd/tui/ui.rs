@@ -16,15 +16,16 @@ impl App {
             .direction(Direction::Vertical)
             .constraints(
                 [
-                    Constraint::Length(1),
-                    Constraint::Length(self.rows_per_page as u16 + 2),
-                    Constraint::Length(1),
+                    Constraint::Length(1),                             // Header
+                    Constraint::Length(self.rows_per_page as u16 + 2), // Main Content
+                    Constraint::Length(1),                             // Help
                 ]
                 .as_ref(),
             )
             .spacing(1)
             .split(f.area());
 
+        // Render the Header component
         f.render_widget(self.header(), base_layout[0]);
 
         // Calculate column widths based on format and configuration
@@ -59,20 +60,22 @@ impl App {
         let mut ascii_data = Vec::new();
         let mut selection_data = Vec::new();
 
-        let selected_styles = Style::default()
+        // Describe the style of the selected element
+        let selected_style = Style::default()
             .bg(Color::Rgb(255, 146, 92))
             .fg(Color::Black)
             .bold();
-        let regular_styles = Style::default().fg(Color::White);
 
+        // Determine the starting and ending rows for the data slice
         let start = self.scroll_offset;
         let end = std::cmp::min(
             self.scroll_offset + self.rows_per_page * self.cfg.size,
             self.data.len(),
         );
 
+        // Iterate over the data slice ...
         for (i, row) in self.data[start..end].iter().enumerate() {
-            let row_index = start + i;
+            let row_index = start + i; // The absolute row index
 
             // Offset column
             offset_data.push(row.format_offset());
@@ -87,6 +90,7 @@ impl App {
                     ascii_spans.push(Span::from(" "));
                 }
 
+                // Format the byte and ascii values
                 let byte_str = self.cfg.format.format(*byte);
                 let ascii_str = if helpers::is_printable_ascii_character(byte) {
                     Span::from((*byte as char).to_string())
@@ -94,65 +98,34 @@ impl App {
                     Span::from("·".dark_gray())
                 };
 
-                let style: Style;
+                // If this is the selected element, style it differently
                 if row_index * self.cfg.size + j == self.selected {
-                    selection_data = vec![
-                        Line::from(vec![
-                            Span::from("Index: "),
-                            Span::from(self.selected.to_string().white()),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nSelected:    "),
-                            Span::from(byte_str.clone().white()),
-                        ]),
-                        Line::from("\n"),
-                        Line::from(vec![
-                            Span::from("\nASCII:       "),
-                            Span::from(ascii_str.clone()).white(),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nDecimal:     "),
-                            Span::from(Format::Decimal.format(*byte).white()),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nBinary:      "),
-                            Span::from(Format::Binary.format(*byte).white()),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nOctal:       "),
-                            Span::from(Format::Octal.format(*byte).white()),
-                        ]),
-                        Line::from(vec![
-                            Span::from("\nHexadecimal: "),
-                            Span::from(Format::Hex.format(*byte).white()),
-                        ]),
-                    ];
-                    style = selected_styles;
-                    ascii_spans.push(ascii_str.style(selected_styles));
+                    selection_data = self.format_selection_block(&byte_str, &ascii_str, byte);
+                    hex_spans.push(Span::styled(byte_str, selected_style));
+                    ascii_spans.push(ascii_str.style(selected_style));
                 } else {
-                    style = regular_styles;
+                    // Otherwise, just add them as is
+                    hex_spans.push(Span::from(byte_str));
                     ascii_spans.push(ascii_str);
                 };
-                hex_spans.push(Span::styled(byte_str, style));
                 hex_spans.push(Span::from(" "));
             }
 
+            // Add the spans to the line
             hex_data.push(Line::from(hex_spans));
             ascii_data.push(Line::from(ascii_spans));
         }
 
+        // Create the block paragraphs and add them to the main section
         let offset_paragraph = Paragraph::new(offset_data)
             .block(offset_block)
-            .alignment(Alignment::Center)
-            .style(Style::default().fg(Color::White));
+            .alignment(Alignment::Center);
         let hex_paragraph = Paragraph::new(hex_data)
             .block(hex_block)
-            .alignment(Alignment::Center)
-            .style(Style::default().fg(Color::White));
+            .alignment(Alignment::Center);
         let ascii_paragraph = Paragraph::new(ascii_data)
             .block(ascii_block)
-            .alignment(Alignment::Center)
-            .style(Style::default().fg(Color::White));
+            .alignment(Alignment::Center);
         let selection_paragraph = Paragraph::new(selection_data).block(selection_block);
 
         f.render_widget(offset_paragraph, columns[0]);
@@ -160,6 +133,7 @@ impl App {
         f.render_widget(ascii_paragraph, columns[2]);
         f.render_widget(selection_paragraph, columns[3]);
 
+        // Render the Help component
         f.render_widget(self.help(), base_layout[2]);
     }
 
@@ -168,6 +142,45 @@ impl App {
             .alignment(Alignment::Center)
             .bold()
             .white()
+    }
+
+    fn format_selection_block(
+        &self,
+        byte_str: &String,
+        ascii_str: &Span<'static>,
+        byte: &u8,
+    ) -> Vec<Line> {
+        vec![
+            Line::from(vec![
+                Span::from("Index: "),
+                Span::from(self.selected.to_string().white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nSelected:    "),
+                Span::from(byte_str.clone().white()),
+            ]),
+            Line::from("\n"),
+            Line::from(vec![
+                Span::from("\nASCII:       "),
+                Span::from(ascii_str.clone()).white(),
+            ]),
+            Line::from(vec![
+                Span::from("\nDecimal:     "),
+                Span::from(Format::Decimal.format(*byte).white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nBinary:      "),
+                Span::from(Format::Binary.format(*byte).white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nOctal:       "),
+                Span::from(Format::Octal.format(*byte).white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nHexadecimal: "),
+                Span::from(Format::Hex.format(*byte).white()),
+            ]),
+        ]
     }
 
     fn help(&self) -> Paragraph<'static> {
