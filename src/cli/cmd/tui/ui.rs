@@ -165,20 +165,20 @@ impl App {
                 Span::from(ascii_str.clone()).white(),
             ]),
             Line::from(vec![
-                Span::from("\nDecimal:     "),
-                Span::from(Format::Decimal.format(*byte).white()),
-            ]),
-            Line::from(vec![
                 Span::from("\nBinary:      "),
                 Span::from(Format::Binary.format(*byte).white()),
             ]),
             Line::from(vec![
-                Span::from("\nOctal:       "),
-                Span::from(Format::Octal.format(*byte).white()),
-            ]),
-            Line::from(vec![
                 Span::from("\nHexadecimal: "),
                 Span::from(Format::Hex.format(*byte).white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nDecimal:     "),
+                Span::from(Format::Decimal.format(*byte).white()),
+            ]),
+            Line::from(vec![
+                Span::from("\nOctal:       "),
+                Span::from(Format::Octal.format(*byte).white()),
             ]),
         ]
     }
