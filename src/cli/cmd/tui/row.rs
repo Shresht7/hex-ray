@@ -22,20 +22,17 @@ impl Row {
         }
     }
 
-    pub fn format_offset(&self) -> Line {
+    pub fn format_offset(&self) -> String {
         let res = Format::Octal.format(self.offset as u8);
         if res.len() > 8 {
-            let s = format!("{:0>8}", res);
-            return Line::from(Span::from(s));
+            return format!("{:0>8}", res);
         }
 
-        let mut padding_str = String::from("");
+        let mut padding = String::from("");
         for _ in 0..(8 - res.len()) {
-            padding_str.push_str(&"·");
+            padding.push_str(&"·");
         }
-        let padding = Span::styled(padding_str, Style::default().fg(Color::DarkGray));
-
-        Line::from(vec![padding, Span::from(res)])
+        format!("{}{}", padding, res)
     }
 
     pub fn format_hex_values(&self, selected: usize) -> String {

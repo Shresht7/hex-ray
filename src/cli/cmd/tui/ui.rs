@@ -78,7 +78,13 @@ impl App {
             let row_index = start + i; // The absolute row index
 
             // Offset column
-            offset_data.push(row.format_offset());
+            let offset_str = row.format_offset();
+            let offset_spans = if self.selected / self.cfg.size == row_index {
+                Span::from(offset_str.white())
+            } else {
+                Span::from(offset_str)
+            };
+            offset_data.push(Line::from(offset_spans));
 
             // Hex Values column
             let mut hex_spans = Vec::new();
