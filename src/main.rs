@@ -20,7 +20,7 @@ fn run(args: cli::Args) -> Result<(), Box<dyn std::error::Error>> {
     let ret = match args.cmd {
         Some(cli::Command::View(cmd)) => cmd.execute()?,
         Some(cli::Command::Output(cmd)) => cmd.execute()?,
-        Some(cli::Command::Tui(cmd)) => cmd.execute_tui()?,
+        Some(cli::Command::Inspect(cmd)) => cmd.execute_interactively()?,
         _ => {}
     };
     Ok(ret)
