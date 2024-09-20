@@ -8,29 +8,44 @@ A hexdump utility that let's you look at the individual bytes that make up a fil
 
 To install `hex-ray`, ensure you have Rust and Cargo installed. You can then build the project from source.
 
-1. Clone the repository.
+- Clone the repository.
 
 ```sh
 git clone https://github.com/Shresht7/hex-ray.git
 cd hex-ray
 ```
 
-2. Build the project.
+- Build the project and use the compiled binary located in the `target/release` directory.
 
 ```sh
 cargo build --release
 ```
 
-3. The compiled binary will be located in the `target/release` directory.
+- Alternatively, install directly using cargo
 
+```sh
+cargo install --path .
+```
 
 ## Usage
 
 To use `hex-ray`, run the executable followed by the path of the file you want to inspect.
 
 ```sh
-hex-ray <filepath>
+hex-ray <subcommand> <filepaths...>
 ```
+
+or pipe something in
+
+```sh
+git log | hex-ray <subcommand>
+```
+
+### Commands
+
+- `view`: View the hex-dump table
+- `inspect`: View the hex-dump table in an interactive terminal UI
+- `output`: Output only the values
 
 ### Sample Output
 
