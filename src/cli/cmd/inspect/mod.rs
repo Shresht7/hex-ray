@@ -10,7 +10,7 @@ use crate::utils::helpers;
 use app::App;
 
 impl View {
-    pub fn execute_tui(self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn execute_interactively(self) -> Result<(), Box<dyn std::error::Error>> {
         self.init(); // Initialize the configuration
 
         // Get the reader and starting offset
