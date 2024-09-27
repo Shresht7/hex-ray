@@ -1,4 +1,36 @@
+Output demo.gif
+
+Require cat
+Require hex-ray
+
+Set Shell "bash"
+Set FontSize 16
+Set Width 1400
+Set Height 600
+
+Type "cat ./src/main.rs | hex-ray inspect"
+Sleep 500ms
+Enter
+Sleep 100ms
+
+Right@100ms 7
+Sleep 500ms
+Down@100ms 12
+Sleep 500ms
+Left@100ms 2
+Sleep 500ms
+Right@100ms 10
+Sleep 500ms
+Up@100ms 5
+Sleep 500ms
+Left@100ms 4
+Sleep 3s
+
+
+
+# -----------------
 # VHS documentation
+# -----------------
 #
 # Output:
 #   Output <path>.gif               Create a GIF output at the given <path>
@@ -54,31 +86,3 @@
 # Display:
 #   Hide                            Hide the subsequent commands from the output
 #   Show                            Show the subsequent commands in the output
-
-Output demo.gif
-
-Require echo
-Require hex-ray
-
-Set Shell "bash"
-Set FontSize 16
-Set Width 1400
-Set Height 600
-
-Type "cat ./src/main.rs | hex-ray inspect"
-Sleep 500ms
-Enter
-Sleep 100ms
-
-Right@100ms 7
-Sleep 500ms
-Down@100ms 12
-Sleep 500ms
-Left@100ms 2
-Sleep 500ms
-Right@100ms 10
-Sleep 500ms
-Up@100ms 5
-Sleep 500ms
-Left@100ms 4
-Sleep 3s
