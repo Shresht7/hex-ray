@@ -2,37 +2,41 @@
 
 A hexdump utility that let's you look at the individual bytes that make up a file. The value of each 8-bit byte is displayed as a pair of hexadecimal (base-16) values.
 
-<!-- TODO: Add sample output, screenshot or demo -->
+![demo](./docs/demo.gif)
 
-## Installation
+---
+
+## 📦 Installation
 
 To install `hex-ray`, ensure you have Rust and Cargo installed. You can then build the project from source.
 
 - Clone the repository.
 
-```sh
-git clone https://github.com/Shresht7/hex-ray.git
-cd hex-ray
-```
+    ```sh
+    git clone https://github.com/Shresht7/hex-ray.git
+    cd hex-ray
+    ```
 
 - Build the project and use the compiled binary located in the `target/release` directory.
 
-```sh
-cargo build --release
-```
+    ```sh
+    cargo build --release
+    ```
 
-- **Alternatively**, install directly using cargo
+    **Alternatively**, install directly using cargo
 
-```sh
-cargo install --path .
-```
+    ```sh
+    cargo install --path .
+    ```
 
-## Usage
+---
+
+## 📘 Usage
 
 To use `hex-ray`, run the executable followed by the path of the file you want to inspect.
 
 ```sh
-hex-ray <subcommand> <filepaths...>
+hex-ray <subcommand> [options]
 ```
 
 or pipe something in
@@ -47,45 +51,44 @@ git log | hex-ray <subcommand>
 - `inspect`: View the hex-dump table in an interactive terminal UI
 - `output`: Output only the values
 
+    >[!TIP]
+    > 
+    > Use the `--help` flag for more information.
 
->[!TIP]
-> 
-> Use the `--help` flag for more information.
+### Examples
 
-## Examples
+- #### `cat ./src/main.rs | hex-ray view`
 
-### `cat ./src/main.rs | hex-ray view`
+    ```output
+    Source: STDIN
+    ┌───────────┬─────────────────────────────────────────────────────┬─────────────────────┐
+    │  ·····000 │ 2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63  │ //·T rait s··u se·c │
+    │  ·····020 │ 6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a  │ lap: :Par ser; ···· │
+    │  ·····040 │ 2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20  │ //·M odul es·· mod· │
+    │  ·····060 │ 63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b  │ cli; ··mo d·ut ils; │
+    .........................................................................................
+    │  ·····160 │ 4f 6b 28 72  65 74 29 0d  0a 7d 0d 0a               │ Ok(r et)· ·}··      │
+    └───────────┴─────────────────────────────────────────────────────┴─────────────────────┘
+    Read 636 bytes
+    ```
 
-```output
-Source: STDIN
-┌───────────┬─────────────────────────────────────────────────────┬─────────────────────┐
-│  ·····000 │ 2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63  │ //·T rait s··u se·c │
-│  ·····020 │ 6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a  │ lap: :Par ser; ···· │
-│  ·····040 │ 2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20  │ //·M odul es·· mod· │
-│  ·····060 │ 63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b  │ cli; ··mo d·ut ils; │
-.........................................................................................
-│  ·····160 │ 4f 6b 28 72  65 74 29 0d  0a 7d 0d 0a               │ Ok(r et)· ·}··      │
-└───────────┴─────────────────────────────────────────────────────┴─────────────────────┘
-Read 636 bytes
-```
+- #### `cat ./src/main.rs | hex-ray view --plain`
 
-### `cat ./src/main.rs | hex-ray view --plain`
+    ```output
+    00000000:  2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63   | //·T rait s··u se·c
+    00000020:  6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a   | lap: :Par ser; ····
+    00000040:  2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20   | //·M odul es·· mod·
+    00000060:  63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b   | cli; ··mo d·ut ils;
+    ...
+    ```
 
-```output
-00000000:  2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63   | //·T rait s··u se·c
-00000020:  6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a   | lap: :Par ser; ····
-00000040:  2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20   | //·M odul es·· mod·
-00000060:  63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b   | cli; ··mo d·ut ils;
-...
-```
+- #### `"Wow!" | hex-ray output --format binary`
 
-### `"Hello World!" | hex-ray output --format binary`
+    ```output
+    01010111 01101111 01110111 00100001 00001101 00001010
+    ```
 
-```output
-01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100001 00001101 00001010 
-```
-
-## Additional Information
+## 📕 Additional Information
 
 
 > [!NOTE]
@@ -101,7 +104,7 @@ Read 636 bytes
 > 
 > If you haven't met it before, the 0x prefix is used to indicate that a number is written in hexadecimal base. Similarly 0o can be used to indicate octal (base-8) and 0b to indicate binary (base-2).
 
-### `NO_COLOR`
+### `NO_COLOR` Environment Variable
 
 > [!TIP]
 > `hex-ray` respects the `NO_COLOR` environment variable. ANSI colors will be disabled if `NO_COLOR` is set. You can pass in the `--no-color` flag to force disable the colors.
