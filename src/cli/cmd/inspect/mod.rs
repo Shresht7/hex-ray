@@ -10,6 +10,7 @@ use crate::utils::helpers;
 use app::App;
 
 impl View {
+    /// View the hex-dump in an interactive session
     pub fn execute_interactively(self) -> Result<(), Box<dyn std::error::Error>> {
         self.init(); // Initialize the configuration
 

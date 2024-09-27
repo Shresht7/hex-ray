@@ -10,6 +10,7 @@ use crate::utils::helpers;
 use super::App;
 
 impl App {
+    /// Draw the UI to the screen
     pub fn draw(&self, f: &mut Frame) {
         // Create the base layout
         let base_layout = Layout::default()
@@ -17,7 +18,7 @@ impl App {
             .constraints(
                 [
                     Constraint::Length(1),                             // Header
-                    Constraint::Length(self.rows_per_page as u16 + 2), // Main Content
+                    Constraint::Length(self.rows_per_page as u16 + 2), // Main Content (+2 for top and bottom border)
                     Constraint::Length(1),                             // Help
                 ]
                 .as_ref(),
@@ -29,11 +30,11 @@ impl App {
         f.render_widget(self.header(), base_layout[0]);
 
         // Calculate column widths based on format and configuration
-        let offset_len = 8 + 4;
-        let hex_len = ((self.cfg.format.size() + 1) * self.cfg.size)
-            + (self.cfg.size / self.cfg.group_size)
-            + 4;
-        let ascii_len = (self.cfg.size + 1) + (self.cfg.size / self.cfg.group_size) + 2;
+        let offset_len = 8 + 4; // 8 digits + (2 space + 2 borders)
+        let hex_len = ((self.cfg.format.size() + 1) * self.cfg.size) // Format size (e.g. 2 for Hex) + 1 whitespace
+            + (self.cfg.size / self.cfg.group_size) // Extra whitespace for group separators
+            + 4; // + 2 outer space + 2 borders
+        let ascii_len = (self.cfg.size + 1) + (self.cfg.size / self.cfg.group_size) + 2; // (1 ASCII char + 1 whitespace) + (group spacing) + borders
 
         // Create a layout with three vertical sections
         let columns = Layout::default()
@@ -76,7 +77,7 @@ impl App {
         // Iterate over the data slice ...
         for (i, row) in self.data[start..end].iter().enumerate() {
             let row_index = start + i; // The absolute row index
-            let is_selected_row = self.selected / self.cfg.size == row_index;
+            let is_selected_row = self.row(self.selected) == row_index;
 
             // Offset column
             let offset_str = row.format_offset();
@@ -146,6 +147,7 @@ impl App {
         f.render_widget(self.help(), base_layout[2]);
     }
 
+    /// Render the header
     fn header(&self) -> Paragraph<'static> {
         Paragraph::new("·• Hex·Ray •·")
             .alignment(Alignment::Center)
@@ -153,6 +155,7 @@ impl App {
             .white()
     }
 
+    /// Render the selection block
     fn format_selection_block(
         &self,
         byte_str: &String,
@@ -192,6 +195,7 @@ impl App {
         ]
     }
 
+    // Render the help line
     fn help(&self) -> Paragraph<'static> {
         // Help text styled and combined into a single line
         let help_text = vec![
