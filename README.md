@@ -88,8 +88,6 @@ git log | hex-ray <subcommand>
     01010111 01101111 01110111 00100001 00001101 00001010
     ```
 
----
-
 ## 📕 Additional Information
 
 

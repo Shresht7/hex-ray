@@ -1,4 +1,4 @@
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
 use super::App;
 
@@ -23,6 +23,8 @@ impl App {
             KeyCode::Right => self.move_selection_right(),
             KeyCode::Down => self.move_selection_down(),
             KeyCode::Left => self.move_selection_left(),
+            KeyCode::Home => self.move_selection_to_home(key_event.modifiers),
+            KeyCode::End => self.move_selection_to_end(key_event.modifiers),
             KeyCode::PageUp => self.scroll_up(),
             KeyCode::PageDown => self.scroll_down(),
             KeyCode::Esc | KeyCode::Char('q') => self.exit(),
@@ -43,8 +45,6 @@ impl App {
             self.adjust_scroll_view();
         }
     }
-
-    // TODO: Swap the function names (right / left)
 
     /// Select the previous element
     fn move_selection_left(&mut self) {
@@ -70,6 +70,28 @@ impl App {
         if self.selected <= self.total_bytes {
             self.selected += 1; // ... Move it to the right by one
             self.adjust_scroll_view();
+        }
+    }
+
+    /// Select the first element in the row
+    fn move_selection_to_home(&mut self, modifiers: KeyModifiers) {
+        if modifiers == KeyModifiers::CONTROL {
+            self.selected = 0;
+            self.scroll_offset = 0;
+        } else {
+            let remainder = self.selected % self.cfg.size;
+            self.selected -= remainder;
+        }
+    }
+
+    /// Select the last element in the row
+    fn move_selection_to_end(&mut self, modifiers: KeyModifiers) {
+        if modifiers == KeyModifiers::CONTROL {
+            self.selected = self.total_bytes - 1;
+            self.scroll_offset = (self.total_bytes / self.cfg.size) - self.rows_per_page + 1;
+        } else {
+            let remainder = self.selected % self.cfg.size;
+            self.selected += self.cfg.size - remainder - 1;
         }
     }
 
