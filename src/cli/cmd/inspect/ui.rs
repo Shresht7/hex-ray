@@ -198,7 +198,10 @@ impl App {
             Span::styled("q / esc  ", Style::default().fg(Color::Green)),
             Span::styled("Quit", Style::default().fg(Color::DarkGray)),
             Span::styled("  •  ", Style::default().fg(Color::DarkGray)),
-            Span::styled("← ↑ ↓ →  ", Style::default().fg(Color::Green)),
+            Span::styled(
+                "pgup home ← ↑ ↓ → end pgdn ",
+                Style::default().fg(Color::Green),
+            ),
             Span::styled("Move selection", Style::default().fg(Color::DarkGray)),
         ];
         let help_line = Line::from(help_text);
