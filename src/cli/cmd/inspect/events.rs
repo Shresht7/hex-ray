@@ -23,10 +23,13 @@ impl App {
             KeyCode::Right => self.move_selection_right(),
             KeyCode::Down => self.move_selection_down(),
             KeyCode::Left => self.move_selection_left(),
+
             KeyCode::Home => self.move_selection_to_home(key_event.modifiers),
             KeyCode::End => self.move_selection_to_end(key_event.modifiers),
+
             KeyCode::PageUp => self.scroll_up(),
             KeyCode::PageDown => self.scroll_down(),
+
             KeyCode::Esc | KeyCode::Char('q') => self.exit(),
             _ => {}
         }
