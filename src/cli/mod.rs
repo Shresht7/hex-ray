@@ -18,10 +18,10 @@ pub struct Args {
 
 #[derive(clap::Subcommand, Clone)]
 pub enum Command {
-    /// Prints the plain output
+    /// Prints the styled output
     View(cmd::View),
-    /// View the output in a tabulated format
+    /// Outputs only the values
     Output(cmd::Output),
-    /// Run the Terminal User Interface
+    /// View using an interactive Terminal User Interface
     Inspect(cmd::View),
 }

@@ -21,7 +21,7 @@ cd hex-ray
 cargo build --release
 ```
 
-- Alternatively, install directly using cargo
+- **Alternatively**, install directly using cargo
 
 ```sh
 cargo install --path .
@@ -47,20 +47,46 @@ git log | hex-ray <subcommand>
 - `inspect`: View the hex-dump table in an interactive terminal UI
 - `output`: Output only the values
 
-### Sample Output
 
-Here's an example of what the output will look like.
+>[!TIP]
+> 
+> Use the `--help` flag for more information.
+
+## Examples
+
+### `cat ./src/main.rs | hex-ray view`
 
 ```output
-00000000  48 65 6c 6c 6f 20 77 6f  72 6c 64 21 0a           | Hello world!.   |
+Source: STDIN
+┌───────────┬─────────────────────────────────────────────────────┬─────────────────────┐
+│  ·····000 │ 2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63  │ //·T rait s··u se·c │
+│  ·····020 │ 6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a  │ lap: :Par ser; ···· │
+│  ·····040 │ 2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20  │ //·M odul es·· mod· │
+│  ·····060 │ 63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b  │ cli; ··mo d·ut ils; │
+.........................................................................................
+│  ·····160 │ 4f 6b 28 72  65 74 29 0d  0a 7d 0d 0a               │ Ok(r et)· ·}··      │
+└───────────┴─────────────────────────────────────────────────────┴─────────────────────┘
+Read 636 bytes
 ```
 
-<!-- TODO: Full help message -->
+### `cat ./src/main.rs | hex-ray view --plain`
 
-> [!TIP]
-> `hex-ray` respects the `NO_COLOR` environment variable. ANSI colors will be disabled if `NO_COLOR` is set. You can pass in the `--no-color` flag to force disable the colors.
+```output
+00000000:  2f 2f 20 54  72 61 69 74  73 0d 0a 75  73 65 20 63   | //·T rait s··u se·c
+00000020:  6c 61 70 3a  3a 50 61 72  73 65 72 3b  0d 0a 0d 0a   | lap: :Par ser; ····
+00000040:  2f 2f 20 4d  6f 64 75 6c  65 73 0d 0a  6d 6f 64 20   | //·M odul es·· mod·
+00000060:  63 6c 69 3b  0d 0a 6d 6f  64 20 75 74  69 6c 73 3b   | cli; ··mo d·ut ils;
+...
+```
 
----
+### `"Hello World!" | hex-ray output --format binary`
+
+```output
+01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100001 00001101 00001010 
+```
+
+## Additional Information
+
 
 > [!NOTE]
 >
@@ -74,6 +100,11 @@ Here's an example of what the output will look like.
 > [!NOTE]
 > 
 > If you haven't met it before, the 0x prefix is used to indicate that a number is written in hexadecimal base. Similarly 0o can be used to indicate octal (base-8) and 0b to indicate binary (base-2).
+
+### `NO_COLOR`
+
+> [!TIP]
+> `hex-ray` respects the `NO_COLOR` environment variable. ANSI colors will be disabled if `NO_COLOR` is set. You can pass in the `--no-color` flag to force disable the colors.
 
 ---
 
