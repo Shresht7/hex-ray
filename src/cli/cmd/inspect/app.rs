@@ -80,17 +80,17 @@ impl App {
     }
 
     /// Get the row number for the given index position
-    pub fn row(&mut self, index: usize) -> usize {
+    pub fn row(&self, index: usize) -> usize {
         index / self.cfg.size
     }
 
     /// Get the column number for the given index position
-    pub fn col(&mut self, index: usize) -> usize {
+    pub fn col(&self, index: usize) -> usize {
         index % self.cfg.size
     }
 
     /// Calculate the index offset for the given number of rows
-    pub fn rows(&mut self, n: usize) -> usize {
+    pub fn rows(&self, n: usize) -> usize {
         n * self.cfg.size
     }
 }
