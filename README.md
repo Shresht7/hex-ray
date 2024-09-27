@@ -2,7 +2,7 @@
 
 A hexdump utility that let's you look at the individual bytes that make up a file. The value of each 8-bit byte is displayed as a pair of hexadecimal (base-16) values.
 
-<!-- TODO: Add sample output, screenshot or demo -->
+![demo](./docs/demo.gif)
 
 ---
 
