@@ -12,22 +12,22 @@ To install `hex-ray`, ensure you have Rust and Cargo installed. You can then bui
 
 - Clone the repository.
 
-```sh
-git clone https://github.com/Shresht7/hex-ray.git
-cd hex-ray
-```
+    ```sh
+    git clone https://github.com/Shresht7/hex-ray.git
+    cd hex-ray
+    ```
 
 - Build the project and use the compiled binary located in the `target/release` directory.
 
-```sh
-cargo build --release
-```
+    ```sh
+    cargo build --release
+    ```
 
-- **Alternatively**, install directly using cargo
+    **Alternatively**, install directly using cargo
 
-```sh
-cargo install --path .
-```
+    ```sh
+    cargo install --path .
+    ```
 
 ---
 
@@ -51,10 +51,9 @@ git log | hex-ray <subcommand>
 - `inspect`: View the hex-dump table in an interactive terminal UI
 - `output`: Output only the values
 
-
->[!TIP]
-> 
-> Use the `--help` flag for more information.
+    >[!TIP]
+    > 
+    > Use the `--help` flag for more information.
 
 ### Examples
 
@@ -107,7 +106,7 @@ git log | hex-ray <subcommand>
 > 
 > If you haven't met it before, the 0x prefix is used to indicate that a number is written in hexadecimal base. Similarly 0o can be used to indicate octal (base-8) and 0b to indicate binary (base-2).
 
-### `NO_COLOR`
+### `NO_COLOR` Environment Variable
 
 > [!TIP]
 > `hex-ray` respects the `NO_COLOR` environment variable. ANSI colors will be disabled if `NO_COLOR` is set. You can pass in the `--no-color` flag to force disable the colors.
