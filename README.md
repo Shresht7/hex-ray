@@ -4,6 +4,8 @@ A hexdump utility that let's you look at the individual bytes that make up a fil
 
 <!-- TODO: Add sample output, screenshot or demo -->
 
+---
+
 ## 📦 Installation
 
 To install `hex-ray`, ensure you have Rust and Cargo installed. You can then build the project from source.
@@ -26,6 +28,8 @@ cargo build --release
 ```sh
 cargo install --path .
 ```
+
+---
 
 ## 📘 Usage
 
@@ -84,6 +88,8 @@ git log | hex-ray <subcommand>
     ```output
     01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100001 00001101 00001010 
     ```
+
+---
 
 ## 📕 Additional Information
 
