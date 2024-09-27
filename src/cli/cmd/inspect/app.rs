@@ -10,15 +10,17 @@ pub struct App {
     pub data: Vec<Row>,       // The 2D vector of data
     pub total_bytes: usize,   // The total count of bytes
     pub selected: usize,      // The index of the selected byte
-    pub scroll_offset: usize, // The scroll position of the first row
+    pub scroll_offset: usize, // The scroll position marking the first row to show
     pub rows_per_page: usize, // Number of rows to show per page
     pub exit: bool,           // Should exit the application
 }
 
 impl App {
     /// Instantiate a new instance of the application from the configuration parameters
-    pub fn new(cfg: View, size: u16) -> Self {
-        let rows_per_page = std::cmp::max(10, size as usize - 6);
+    pub fn new(cfg: View, terminal_height: u16) -> Self {
+        // The number of rows to show per scroll-page is determined by the terminal height. (Minimum: 10 rows)
+        // We subtract 6 to account for the border, help-line etc. both above and below the viewport.
+        let rows_per_page = std::cmp::max(10, terminal_height as usize - 6);
         Self {
             cfg,
             rows_per_page,
@@ -41,7 +43,7 @@ impl App {
         // The number of bytes remaining to be read
         let mut bytes_remaining = self.cfg.limit.unwrap_or(usize::MAX);
 
-        // Keep iterating until we run out of bytes to read
+        // Keep iterating until we run out of bytes to read...
         while bytes_remaining > 0 {
             // Determine the number of bytes to be read in this iteration
             let bytes_to_read = std::cmp::min(bytes_remaining, self.cfg.size);
@@ -71,8 +73,8 @@ impl App {
     ) -> Result<(), Box<dyn std::error::Error>> {
         // The main draw loop
         while !self.exit {
-            terminal.draw(|frame| self.draw(frame))?;
-            self.handle_events()?;
+            terminal.draw(|frame| self.draw(frame))?; // Render UI
+            self.handle_events()?; // Handle Events
         }
         Ok(())
     }
