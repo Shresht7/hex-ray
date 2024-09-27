@@ -23,6 +23,8 @@ impl App {
             KeyCode::Right => self.move_selection_right(),
             KeyCode::Down => self.move_selection_down(),
             KeyCode::Left => self.move_selection_left(),
+            KeyCode::Home => self.move_selection_to_home(),
+            KeyCode::End => self.move_selection_to_end(),
             KeyCode::PageUp => self.scroll_up(),
             KeyCode::PageDown => self.scroll_down(),
             KeyCode::Esc | KeyCode::Char('q') => self.exit(),
@@ -43,8 +45,6 @@ impl App {
             self.adjust_scroll_view();
         }
     }
-
-    // TODO: Swap the function names (right / left)
 
     /// Select the previous element
     fn move_selection_left(&mut self) {
@@ -71,6 +71,18 @@ impl App {
             self.selected += 1; // ... Move it to the right by one
             self.adjust_scroll_view();
         }
+    }
+
+    /// Select the first element in the row
+    fn move_selection_to_home(&mut self) {
+        let remainder = self.selected % self.cfg.size;
+        self.selected -= remainder;
+    }
+
+    /// Select the last element in the row
+    fn move_selection_to_end(&mut self) {
+        let remainder = self.selected % self.cfg.size;
+        self.selected += self.cfg.size - remainder - 1;
     }
 
     /// Scroll up a page
