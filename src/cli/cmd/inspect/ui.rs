@@ -70,7 +70,7 @@ impl App {
         // Determine the starting and ending rows for the data slice
         let start = self.scroll_offset;
         let end = std::cmp::min(
-            self.scroll_offset + self.rows_per_page * self.cfg.size,
+            self.scroll_offset + self.rows(self.rows_per_page),
             self.data.len(),
         );
 
