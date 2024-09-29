@@ -132,12 +132,12 @@ impl App {
     fn adjust_scroll_view(&mut self) {
         // Now, if the selection falls above the first row in the view ...
         if self.selected < self.rows(self.scroll_offset) {
-            let rows_to_scroll = self.row(self.scroll_offset - self.selected);
+            let rows_to_scroll = self.row(self.rows(self.scroll_offset + 1) - self.selected);
             self.scroll_offset = self.scroll_offset.saturating_sub(rows_to_scroll);
         } else if self.selected >= self.rows(self.rows_per_page + self.scroll_offset) {
             // Otherwise if the selection goes beyond the last row in the view, scroll down by x rows
             let rows_to_scroll =
-                self.row(self.selected - (self.rows_per_page + self.scroll_offset));
+                self.row(self.selected - self.rows(self.rows_per_page + self.scroll_offset)) + 1;
             self.scroll_offset += rows_to_scroll;
         }
     }
