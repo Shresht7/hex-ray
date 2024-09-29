@@ -95,14 +95,14 @@ git log | hex-ray <subcommand>
 >
 > ## Why Hexadecimal?
 >
-> The number of distinct values any sequence of digits can represent is given by the base raised to the power of the number of digits in the sequence. For example, a 2-bit binary (base-2) sequence can represent 2<sup>2</sup> = 4 distinct values; namely 00, 01, 10, 11. The 8 binary digits in a byte can represent 2<sup>8</sup> = 256 distinct values, usually interpreted as the numbers 0 to 255. Similarly, two-digit hexadecimal numbers can represent 16<sup>2</sup> distinct values - also 256. This convenient correspondence is why programmers like hexadecimal notation so much - it gives us a compact way of representing all possible byte values with just two digits!
+> The number of distinct values any sequence of digits can represent is given by the base raised to the power of the number of digits in the sequence. For example, a 2-bit binary (base-2) sequence can represent 2<sup>2</sup> = 4 distinct values; namely 00, 01, 10, 11. The 8 binary digits in a byte can represent 2<sup>8</sup> = 256 distinct values, usually interpreted as the numbers 0 to 255. Similarly, two-digit hexadecimal (base-16) numbers can represent 16<sup>2</sup> distinct values - also 256. This convenient correspondence is why programmers like hexadecimal notation so much - it gives us a compact way of representing all possible byte values with just two digits!
 >
 > Actually, it's even better than you might suspect at first. Each hexadecimal digit aligns cleanly with four bits of the corresponding byte so the hexadecimal number 0x12 corresponds to the byte 0001_0010 and the hexadecimal number 0x34 corresponds to 0011_0100. This makes it really easy to read bit patterns directly from hex notation!
 >
 
 > [!NOTE]
 > 
-> If you haven't met it before, the 0x prefix is used to indicate that a number is written in hexadecimal base. Similarly 0o can be used to indicate octal (base-8) and 0b to indicate binary (base-2).
+> The `0x` prefix indicates that a number is written in hexadecimal (base-16) format. Similarly, `0o` is used to indicate octal (base-8) and `0b` to indicate binary (base-2).
 
 ### `NO_COLOR` Environment Variable
 
