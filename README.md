@@ -55,6 +55,35 @@ git log | hex-ray <subcommand>
 > 
 > Use the `--help` flag for more information.
 
+### Arguments
+
+#### `inspect` and `view`
+
+Both `inspect` and `view` support the following options:
+
+| Argument           | Description                                                                                            | Aliases        | Default |
+| ------------------ | ------------------------------------------------------------------------------------------------------ | -------------- | ------: |
+| `[filepath]`       | The only positional argument. Accepts the path to the file to read. If empty, input is read from STDIN | `path`, `src`  | `STDIN` |
+| `-o, --offset`     | The byte offset at which to start reading. This can be a positive or negative integer value.           | `skip`, `seek` |     `0` |
+| `-l, --limit`      | The number of bytes to read. The program will stop after reading the specified number of bytes         |                |   `ALL` |
+| `-s, --size`       | The size of each row in the tabulated output                                                           |                |    `16` |
+| `-g, --group-size` | Chunks the output into groups of this size                                                             | `chunk`        |     `4` |
+| `-f, --format`     | The output display [format](#formats).                                                                 |                |   `hex` |
+| `--no-color`       | Disables ANSI colors in the output. Useful when redirecting the output to a file                       |                | `false` |
+| `-p, --plain`      | Similar to `--no-color`, disables all stylistic formatting for the output                              | `simple`       | `false` |
+
+#### `output`
+
+ The `output` subcommand supports the following flags:
+
+| Argument          | Description                                                                                            | Aliases        | Default |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | -------------- | ------: |
+| `[filepath]`      | The only positional argument. Accepts the path to the file to read. If empty, input is read from STDIN | `path`, `src`  | `STDIN` |
+| `-o, --offset`    | The byte offset at which to start reading. This can be a positive or negative integer value.           | `skip`, `seek` |     `0` |
+| `-l, --limit`     | The number of bytes to read. The program will stop after reading the specified number of bytes         |                |   `ALL` |
+| `-f, --format`    | The output display [format](#formats).                                                                 |                |   `hex` |
+| `-s, --separator` | The character to separate the output values                                                            |                |     ` ` |
+
 ### Examples
 
 - #### `cat ./src/main.rs | hex-ray view`
