@@ -45,9 +45,9 @@ impl Format {
             Self::UpperHexWithPrefix => format!("{:#04X}", data), // e.g. 0x3F
             Self::Binary => format!("{:08b}", data),              // e.g. 00111111
             Self::BinaryWithPrefix => format!("{:#010b}", data),  // e.g. 0b00111111
-            Self::Octal => format!("{:03o}", data),               // e.g. 77
-            Self::OctalWithPrefix => format!("{:#05o}", data),    // e.g. 0o77
-            Self::Decimal => format!("{:03}", data),              // e.g. 63
+            Self::Octal => format!("{:03o}", data),               // e.g. 077
+            Self::OctalWithPrefix => format!("{:#05o}", data),    // e.g. 0o077
+            Self::Decimal => format!("{:03}", data),              // e.g. 063
         }
     }
 
@@ -60,9 +60,74 @@ impl Format {
             Format::UpperHexWithPrefix => 4, // e.g. 0x3F
             Format::Binary => 8,             // e.g. 00111111
             Format::BinaryWithPrefix => 10,  // e.g. 0b00111111
-            Format::Octal => 3,              // e.g. 77
-            Format::OctalWithPrefix => 5,    // e.g. 0o77
-            Format::Decimal => 3,            // e.g. 63
+            Format::Octal => 3,              // e.g. 077
+            Format::OctalWithPrefix => 5,    // e.g. 0o077
+            Format::Decimal => 3,            // e.g. 063
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_INPUT: u8 = 63;
+
+    #[test]
+    fn should_format_as_hex() {
+        assert_eq!(Format::Hex.format(TEST_INPUT), "3f");
+    }
+
+    #[test]
+    fn should_format_as_hex_with_prefix() {
+        assert_eq!(Format::HexWithPrefix.format(TEST_INPUT), "0x3f");
+    }
+
+    #[test]
+    fn should_format_as_uppercase_hex() {
+        assert_eq!(Format::UpperHex.format(TEST_INPUT), "3F");
+    }
+
+    #[test]
+    fn should_format_as_uppercase_hex_with_prefix() {
+        assert_eq!(Format::UpperHexWithPrefix.format(TEST_INPUT), "0x3F");
+    }
+
+    #[test]
+    fn should_format_as_binary() {
+        assert_eq!(Format::Binary.format(TEST_INPUT), "00111111");
+    }
+
+    #[test]
+    fn should_format_as_binary_with_prefix() {
+        assert_eq!(Format::BinaryWithPrefix.format(TEST_INPUT), "0b00111111");
+    }
+
+    #[test]
+    fn should_format_as_octal() {
+        assert_eq!(Format::Octal.format(TEST_INPUT), "077");
+    }
+
+    #[test]
+    fn should_format_as_octal_with_prefix() {
+        assert_eq!(Format::OctalWithPrefix.format(TEST_INPUT), "0o077");
+    }
+
+    #[test]
+    fn should_format_as_decimal() {
+        assert_eq!(Format::Decimal.format(TEST_INPUT), "063");
+    }
+
+    #[test]
+    fn should_have_appropriate_size() {
+        assert_eq!(Format::Hex.size(), "3f".len());
+        assert_eq!(Format::HexWithPrefix.size(), "0x3f".len());
+        assert_eq!(Format::UpperHex.size(), "3F".len());
+        assert_eq!(Format::UpperHexWithPrefix.size(), "0x3F".len());
+        assert_eq!(Format::Binary.size(), "00111111".len());
+        assert_eq!(Format::BinaryWithPrefix.size(), "0b00111111".len());
+        assert_eq!(Format::Octal.size(), "077".len());
+        assert_eq!(Format::OctalWithPrefix.size(), "0o077".len());
+        assert_eq!(Format::Decimal.size(), "063".len());
     }
 }
