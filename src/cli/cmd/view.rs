@@ -261,6 +261,6 @@ impl View {
         if self.simple {
             return;
         }
-        println!("Read {} bytes\n", n);
+        println!("Read {} bytes", n);
     }
 }
