@@ -51,9 +51,9 @@ git log | hex-ray <subcommand>
 - `inspect`: View the hex-dump table in an interactive terminal UI
 - `output`: Output only the values
 
-    >[!TIP]
-    > 
-    > Use the `--help` flag for more information.
+>[!TIP]
+> 
+> Use the `--help` flag for more information.
 
 ### Examples
 
